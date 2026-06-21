@@ -1,0 +1,92 @@
+{% extends "portal/base_admin.html" %}
+{% load static %}
+{% block title %}Macaamiisha — Sahal Notary System{% endblock %}
+{% block admin_content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+  <div>
+    <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Macaamiisha</h1>
+    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{{ clients|length }} macmiil oo diiwaangashan</p>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">Liiska</a>
+    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">+ Diiwaangeli Cusub</a>
+  </div>
+</div>
+
+{% if tab == 'add' %}
+<form method="post" class="card" style="padding:36px; max-width:620px; display:flex; flex-direction:column; gap:18px;" id="add-client-form">
+  {% csrf_token %}
+  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px;">Diiwaangeli Macmiil Cusub</h2>
+  <div class="input-field"><label>{{ form.full_name.label }}</label>{{ form.full_name }}</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+    <div class="input-field"><label>{{ form.phone.label }}</label>{{ form.phone }}</div>
+    <div class="input-field"><label>{{ form.email.label }}</label>{{ form.email }}</div>
+  </div>
+  <div class="input-field"><label>{{ form.national_id.label }}</label>{{ form.national_id }}</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+    <div class="input-field"><label>{{ form.city.label }}</label>{{ form.city }}</div>
+    <div class="input-field"><label>{{ form.address.label }}</label>{{ form.address }}</div>
+  </div>
+  <div>
+    <div style="font-size:13.5px; font-weight:600; color:var(--text-strong); margin-bottom:7px;">Saxiixa Macmiilka</div>
+    <canvas id="add-client-signature-canvas" class="signature-pad-canvas" width="480" height="150" style="width:100%; max-width:480px; height:150px;"></canvas>
+    <div style="margin-top:8px;">
+      <button type="button" id="add-client-signature-clear" class="btn" style="height:34px; padding:0 14px; font-size:12.5px;">Tirtir</button>
+    </div>
+    <input type="hidden" name="signature_data" id="add-client-signature-data">
+  </div>
+  <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 16px; font-size:12.5px; color:var(--text-muted);">
+    Username-ka iyo furaha hore ee "123" ayaa si toos ah loo abuuri doonaa. Macmiilku wuxuu bedeli doonaa furaha markuu uga soo galo.
+  </div>
+  <div style="display:flex; gap:12px;">
+    <a href="?tab=list" class="btn">Jooji</a>
+    <button type="submit" class="btn" style="flex:1; background:linear-gradient(135deg,var(--teal-500),var(--purple-600)); color:#fff; border:none;">Diiwaangeli Macmiilka</button>
+  </div>
+</form>
+<script src="{% static 'portal/js/signature_pad.js' %}"></script>
+<script>initSignaturePad('add-client-signature-canvas', 'add-client-signature-data', 'add-client-signature-clear');</script>
+
+{% else %}
+<div class="card" style="overflow:hidden;">
+  <table>
+    <thead><tr style="background:var(--surface-sunken);">
+      <th style="padding:11px 24px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MACMIILKA</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">TELEFOON</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MAGAALO</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">USERNAME</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:center; color:var(--text-muted);">DOCS</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">SAXIIX</th>
+      <th style="padding:11px 24px 11px 16px; font-size:11.5px; font-weight:700; text-align:right; color:var(--text-muted);">FICIL</th>
+    </tr></thead>
+    <tbody>
+      {% for cl in clients %}
+      <tr class="tbl-row" style="border-top:1px solid var(--border-subtle);">
+        <td style="padding:14px 24px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="avatar">{{ cl.user.first_name|slice:":1" }}{{ cl.user.last_name|slice:":1" }}</span>
+            <div><div style="font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text-strong);">{{ cl.user.get_full_name }}</div><div style="font-size:12px; color:var(--text-muted);">{{ cl.user.email }}</div></div>
+          </div>
+        </td>
+        <td style="padding:14px 16px; font-size:13.5px; color:var(--text-body);">{{ cl.phone }}</td>
+        <td style="padding:14px 16px; font-size:13.5px; color:var(--text-body);">{{ cl.city }}</td>
+        <td style="padding:14px 16px; font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);">{{ cl.user.username }}</td>
+        <td style="padding:14px 16px; text-align:center; font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ cl.doc_count }}</td>
+        <td style="padding:14px 16px;">
+          {% if cl.signature %}
+          <img src="{{ cl.signature.url }}" alt="Saxiixa {{ cl.user.get_full_name }}" style="max-height:28px; height:auto; width:auto; max-width:90px;">
+          {% else %}
+          <span class="sig-missing"><span class="pill-dot" style="background:#9A6206;"></span>Lama heli</span>
+          {% endif %}
+        </td>
+        <td style="padding:14px 24px 14px 16px; text-align:right;">
+          <a href="{% url 'admin_client_signature' cl.pk %}" class="btn" style="height:32px; padding:0 14px; font-size:12.5px;">Saxiix</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan macaamiil.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

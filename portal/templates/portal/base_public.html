@@ -1,0 +1,12 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% block body %}
+<div class="public-page">
+  <div class="public-card">
+    <div style="display:flex; justify-content:center; margin-bottom:22px;">
+      <img src="{% static 'portal/img/logo-full.jpeg' %}" alt="Sahal Notary System" style="width:96px; height:auto; mix-blend-mode:multiply;">
+    </div>
+    {% block public_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

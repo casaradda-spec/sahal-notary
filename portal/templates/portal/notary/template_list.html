@@ -1,0 +1,36 @@
+{% extends "portal/base_notary.html" %}
+{% block title %}Qaababka — Sahal Notary System{% endblock %}
+{% block notary_content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+  <div>
+    <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Qaababka</h1>
+    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{{ templates|length }} qaab oo diyaar ah</p>
+  </div>
+  <a href="{% url 'notary_template_new' %}" class="btn btn-primary">+ Samee Qaab Cusub</a>
+</div>
+
+<div style="display:flex; gap:9px; margin-bottom:22px; flex-wrap:wrap;">
+  <a href="{% url 'notary_templates' %}" class="chip {% if not active_category %}chip-active{% endif %}">Dhammaan</a>
+  {% for cat in categories %}
+  <a href="?category={{ cat }}" class="chip {% if active_category == cat %}chip-active{% endif %}">{{ cat }}</a>
+  {% endfor %}
+</div>
+
+<div style="display:flex; flex-direction:column; gap:12px;">
+  {% for tpl in templates %}
+  <div class="card" style="padding:20px 22px; display:flex; align-items:center; gap:18px;">
+    <span style="width:48px; height:48px; border-radius:14px; background:var(--surface-brand-soft); color:var(--purple-600); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">📄</span>
+    <div style="flex:1; min-width:0;">
+      <div style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-strong);">{{ tpl.title }}</div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+        <span style="display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:var(--surface-sunken); color:var(--text-body);">{{ tpl.category }}</span>
+        <span style="display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:var(--surface-brand-soft); color:var(--purple-600);">{{ tpl.party_label }}</span>
+        <span style="font-size:12.5px; color:var(--text-muted);">Loo isticmaalay {{ tpl.times_used }} jeer</span>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card" style="padding:36px; text-align:center; color:var(--text-muted);">Wali ma jiraan qaabab. Samee mid cusub.</div>
+  {% endfor %}
+</div>
+{% endblock %}

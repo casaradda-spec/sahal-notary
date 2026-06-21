@@ -1,0 +1,56 @@
+{% extends "portal/base_admin.html" %}
+{% block title %}Notaayada — Sahal Notary System{% endblock %}
+{% block admin_content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+  <div>
+    <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Notaayada</h1>
+    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{{ notaries|length }} notaayo oo shaqeeya</p>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">Liiska</a>
+    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">+ Kudar Notaayo</a>
+  </div>
+</div>
+
+{% if tab == 'add' %}
+<form method="post" enctype="multipart/form-data" class="card" style="padding:36px; max-width:620px; display:flex; flex-direction:column; gap:18px;">
+  {% csrf_token %}
+  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px;">Kudar Notaayo Cusub</h2>
+  <div class="input-field"><label>{{ form.full_name.label }}</label>{{ form.full_name }}</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+    <div class="input-field"><label>{{ form.license_number.label }}</label>{{ form.license_number }}</div>
+    <div class="input-field"><label>{{ form.region.label }}</label>{{ form.region }}</div>
+  </div>
+  <div class="input-field"><label>{{ form.seal_image.label }}</label>{{ form.seal_image }}</div>
+  <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 16px; font-size:12.5px; color:var(--text-muted);">
+    Username-ka iyo furaha hore ee "123" ayaa si toos ah loo abuuri doonaa.
+  </div>
+  <div style="display:flex; gap:12px;">
+    <a href="?tab=list" class="btn">Jooji</a>
+    <button type="submit" class="btn" style="flex:1; background:linear-gradient(135deg,var(--teal-500),var(--purple-600)); color:#fff; border:none;">Kudar Notaayo</button>
+  </div>
+</form>
+
+{% else %}
+<div style="display:flex; flex-direction:column; gap:14px;">
+  {% for nt in notaries %}
+  <div class="card" style="padding:22px 26px; display:flex; align-items:center; gap:20px;">
+    <span class="avatar" style="width:56px; height:56px; font-size:18px; background:var(--gradient-ink);">{{ nt.user.first_name|slice:":1" }}{{ nt.user.last_name|slice:":1" }}</span>
+    <div style="flex:1; min-width:0;">
+      <div style="font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--text-strong);">{{ nt.user.get_full_name }}</div>
+      <div style="display:flex; align-items:center; gap:14px; margin-top:5px; font-size:13px; color:var(--text-muted);">
+        <span style="font-family:var(--font-mono);">{{ nt.license_number }}</span><span>·</span><span>{{ nt.region }}</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:24px; flex-shrink:0;">
+      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--text-strong);">{{ nt.doc_count }}</div><div style="font-size:11.5px; color:var(--text-muted);">dokumeenti</div></div>
+      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--gold-500);">{{ nt.rating }}</div><div style="font-size:11.5px; color:var(--text-muted);">qiimeyn</div></div>
+      <div style="display:inline-flex; align-items:center; gap:7px; background:var(--green-50); border:1px solid var(--green-100); border-radius:999px; padding:5px 14px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--green-500);"></span><span style="font-size:12.5px; color:var(--green-700,var(--green-600)); font-weight:600;">Shaqeeya</span></div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card" style="padding:36px; text-align:center; color:var(--text-muted);">Wali ma jiraan notaayo.</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

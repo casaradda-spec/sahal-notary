@@ -1,0 +1,113 @@
+/* ============================================================
+   Sahal Notary — Color Tokens
+   Base palette → semantic aliases. All colors live here.
+   ============================================================ */
+
+:root {
+  /* ---- Brand core ------------------------------------------------ */
+  --magenta-500: #E91E8C;   /* vibrant accent — "SAHAL" gradient start */
+  --magenta-600: #CE1379;
+  --magenta-50:  #FDE8F4;
+
+  --purple-700:  #4A2080;
+  --purple-600:  #5B2A9E;   /* primary brand */
+  --purple-500:  #6E3AB8;
+  --purple-100:  #E7DBF6;
+  --purple-50:   #F3EDFB;
+
+  --navy-900:    #0D1730;
+  --navy-800:    #14213D;   /* ink — primary text */
+  --navy-700:    #20304F;
+  --navy-600:    #33456A;
+
+  --teal-600:    #1F77AD;
+  --teal-500:    #2C8FC9;   /* secondary / info */
+  --teal-100:    #D6ECF7;
+  --teal-50:     #EBF5FB;
+
+  --gold-600:    #B9881F;
+  --gold-500:    #D4A12C;   /* seal / premium accent */
+  --gold-100:    #F7ECCF;
+  --gold-50:     #FBF6E9;
+
+  /* ---- Functional hues ------------------------------------------ */
+  --green-600:   #168A5B;
+  --green-500:   #1E9E6A;   /* verified / success */
+  --green-100:   #D4F0E2;
+  --green-50:    #EAF8F1;
+
+  --red-600:     #C8323A;
+  --red-500:     #E5484D;   /* error / revoked */
+  --red-100:     #FBDCDE;
+  --red-50:      #FDEEEF;
+
+  --amber-500:   #E8920C;   /* pending / warning */
+  --amber-100:   #FBE7C6;
+  --amber-50:    #FDF4E5;
+
+  /* ---- Neutrals (navy-tinted slate) ----------------------------- */
+  --white:       #FFFFFF;
+  --slate-50:    #F7F8FB;
+  --slate-100:   #EEF1F6;
+  --slate-200:   #E1E6EF;
+  --slate-300:   #CBD3E1;
+  --slate-400:   #9AA6BC;
+  --slate-500:   #6B7890;
+  --slate-600:   #4C586E;
+  --slate-700:   #34405A;
+
+  /* ---- Gradients ------------------------------------------------ */
+  --gradient-brand:  linear-gradient(135deg, var(--magenta-500) 0%, var(--purple-600) 100%);
+  --gradient-icon:   linear-gradient(140deg, #F5A623 0%, #E5484D 45%, var(--purple-600) 100%);
+  --gradient-ink:    linear-gradient(135deg, var(--navy-800) 0%, var(--purple-700) 100%);
+  --gradient-seal:   linear-gradient(135deg, var(--gold-500) 0%, var(--gold-600) 100%);
+
+  /* ============================================================
+     Semantic aliases — reference these in components
+     ============================================================ */
+
+  /* Text */
+  --text-strong:   var(--navy-800);
+  --text-body:     var(--slate-700);
+  --text-muted:    var(--slate-500);
+  --text-subtle:   var(--slate-400);
+  --text-on-brand: var(--white);
+  --text-link:     var(--purple-600);
+
+  /* Surfaces */
+  --surface-page:    var(--slate-50);
+  --surface-card:    var(--white);
+  --surface-sunken:  var(--slate-100);
+  --surface-inverse: var(--navy-800);
+  --surface-brand-soft: var(--purple-50);
+
+  /* Borders */
+  --border-subtle:  var(--slate-200);
+  --border-default: var(--slate-300);
+  --border-strong:  var(--slate-400);
+  --border-focus:   var(--purple-500);
+
+  /* Interactive — primary */
+  --action-primary:        var(--purple-600);
+  --action-primary-hover:  var(--purple-700);
+  --action-primary-text:   var(--white);
+
+  /* Interactive — accent (magenta) */
+  --action-accent:         var(--magenta-500);
+  --action-accent-hover:   var(--magenta-600);
+
+  /* Status */
+  --status-verified:   var(--green-500);
+  --status-verified-bg: var(--green-50);
+  --status-pending:    var(--amber-500);
+  --status-pending-bg: var(--amber-50);
+  --status-revoked:    var(--red-500);
+  --status-revoked-bg: var(--red-50);
+  --status-info:       var(--teal-500);
+  --status-info-bg:    var(--teal-50);
+  --status-seal:       var(--gold-500);
+  --status-seal-bg:    var(--gold-50);
+
+  /* Focus ring */
+  --ring: 0 0 0 3px rgba(91, 42, 158, 0.28);
+}

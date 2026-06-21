@@ -1,0 +1,251 @@
+from django.test import TestCase
+from django.urls import reverse
+
+from portal.models import AuditLog, Document, DocumentTemplate, Witness
+
+from .base import TempMediaTestCase
+from .factories import make_client_profile, make_notary_profile, make_template
+
+
+class NotaryOverviewTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('overviewnotary')
+        self.other_notary = make_notary_profile('othernotary')
+        self.template = make_template(created_by=self.notary)
+        self.client_profile = make_client_profile('overviewclient')
+
+        self._make_doc(self.notary, Document.Status.PENDING)
+        self._make_doc(self.notary, Document.Status.SIGNED)
+        self._make_doc(self.notary, Document.Status.COMPLETED)
+        self._make_doc(self.other_notary, Document.Status.PENDING)  # belongs to a different notary
+
+    def _make_doc(self, notary, status):
+        doc = Document(template=self.template, notary=notary, client=self.client_profile, city='Muqdisho', status=status)
+        doc.finalize()
+        doc.save()
+        return doc
+
+    def test_anonymous_redirected(self):
+        response = self.client.get(reverse('notary_overview'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_wrong_role_forbidden(self):
+        self.client.force_login(self.client_profile.user)
+        response = self.client.get(reverse('notary_overview'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_stats_only_count_this_notarys_documents(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_overview'))
+        stats = response.context['stats']
+        self.assertEqual(stats['total'], 3)
+        self.assertEqual(stats['pending'], 1)
+        self.assertEqual(stats['signed'], 1)
+        self.assertEqual(stats['completed'], 1)
+
+
+class TemplateListAndCreateTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('tplnotary')
+        make_template(title='Lease', category='Heshiis Kirada', created_by=self.notary)
+        make_template(title='Will', category='Dardaaran', created_by=self.notary)
+
+    def test_category_filter(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_templates'), {'category': 'Dardaaran'})
+        titles = [t.title for t in response.context['templates']]
+        self.assertEqual(titles, ['Will'])
+
+    def test_create_template_assigns_created_by_to_current_notary(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_template_new'), {
+            'title': 'Power of Attorney',
+            'category': 'Wakaalad',
+            'party_type': DocumentTemplate.PartyType.ONE,
+            'requires_witnesses': False,
+            'body': '{{client_name}} {{date}} {{city}} {{notary_name}} {{notary_license}} {{ref}}',
+        })
+        self.assertRedirects(response, reverse('notary_templates'))
+        created = DocumentTemplate.objects.get(title='Power of Attorney')
+        self.assertEqual(created.created_by, self.notary)
+
+
+class NotaryMyDocumentsTests(TestCase):
+    def test_only_shows_this_notarys_documents(self):
+        notary = make_notary_profile('mydocsnotary')
+        other_notary = make_notary_profile('othermydocsnotary')
+        template = make_template(created_by=notary)
+        client_profile = make_client_profile('mydocsclient')
+
+        own_doc = Document(template=template, notary=notary, client=client_profile, city='Muqdisho')
+        own_doc.finalize()
+        own_doc.save()
+
+        other_doc = Document(template=template, notary=other_notary, client=client_profile, city='Muqdisho')
+        other_doc.finalize()
+        other_doc.save()
+
+        self.client.force_login(notary.user)
+        response = self.client.get(reverse('notary_documents'))
+        docs = list(response.context['docs'])
+        self.assertIn(own_doc, docs)
+        self.assertNotIn(other_doc, docs)
+
+
+class NotaryDocumentPdfAndSuccessTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('pdfnotary2')
+        self.other_notary = make_notary_profile('otherpdfnotary2')
+        self.template = make_template(created_by=self.notary)
+        self.client_profile = make_client_profile('pdfclient2')
+        self.doc = Document(template=self.template, notary=self.notary, client=self.client_profile, city='Muqdisho')
+        self.doc.finalize()
+        self.doc.save()
+
+    def test_owning_notary_can_download_pdf(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_document_pdf', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+    def test_other_notary_gets_404_for_pdf(self):
+        self.client.force_login(self.other_notary.user)
+        response = self.client.get(reverse('notary_document_pdf', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_other_notary_gets_404_for_success_page(self):
+        self.client.force_login(self.other_notary.user)
+        response = self.client.get(reverse('notary_create_success', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_owning_notary_sees_success_page_with_qr_url(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_create_success', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(str(self.doc.qr_token), response.context['qr_url'])
+
+
+class NotaryDocumentDetailTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('detailnotary')
+        self.other_notary = make_notary_profile('otherdetailnotary')
+        self.template = make_template(created_by=self.notary)
+        self.client_profile = make_client_profile('detailclient')
+        self.doc = Document(template=self.template, notary=self.notary, client=self.client_profile, city='Muqdisho')
+        self.doc.finalize()
+        self.doc.save()
+
+    def test_owning_notary_can_view_detail_page(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['document'], self.doc)
+
+    def test_other_notary_gets_404(self):
+        self.client.force_login(self.other_notary.user)
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_complete_button_only_shown_when_pending(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertContains(response, 'Dhammaystir')
+
+        self.doc.status = Document.Status.COMPLETED
+        self.doc.save(update_fields=['status'])
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertNotContains(response, 'Dhammaystir &amp; Saxiix')
+
+
+class DocumentCompletionTests(TempMediaTestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('completenotary')
+        self.other_notary = make_notary_profile('othercompletenotary')
+
+    def _make_doc(self, template=None, client=None, client2=None):
+        template = template or make_template(party_type=DocumentTemplate.PartyType.ONE, created_by=self.notary)
+        client = client or make_client_profile('completeclient', with_signature=True)
+        doc = Document(template=template, notary=self.notary, client=client, client2=client2, city='Muqdisho')
+        doc.finalize()
+        doc.save()
+        return doc
+
+    def test_get_request_does_not_complete_the_document(self):
+        doc = self._make_doc()
+        self.client.force_login(self.notary.user)
+        self.client.get(reverse('notary_document_complete', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.PENDING)
+
+    def test_other_notary_gets_404(self):
+        doc = self._make_doc()
+        self.client.force_login(self.other_notary.user)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_blocks_completion_when_client_signature_missing(self):
+        unsigned_client = make_client_profile('nosigclient')
+        doc = self._make_doc(client=unsigned_client)
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]), follow=True)
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.PENDING)
+        self.assertContains(response, 'Lama dhammaystirin karo')
+        self.assertEqual(AuditLog.objects.count(), 0)
+
+    def test_blocks_completion_when_party2_signature_missing(self):
+        signed = make_client_profile('p1signed', with_signature=True)
+        unsigned = make_client_profile('p2unsigned')
+        template = make_template(party_type=DocumentTemplate.PartyType.TWO, created_by=self.notary)
+        doc = self._make_doc(template=template, client=signed, client2=unsigned)
+        self.client.force_login(self.notary.user)
+        self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.PENDING)
+
+    def test_blocks_completion_when_required_witnesses_missing(self):
+        template = make_template(party_type=DocumentTemplate.PartyType.ONE, requires_witnesses=True, created_by=self.notary)
+        doc = self._make_doc(template=template)
+        self.client.force_login(self.notary.user)
+        self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.PENDING)
+
+    def test_completes_when_required_witnesses_present(self):
+        template = make_template(party_type=DocumentTemplate.PartyType.ONE, requires_witnesses=True, created_by=self.notary)
+        doc = self._make_doc(template=template)
+        Witness.objects.create(document=doc, name='Cali Nuur', order=1)
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        self.assertRedirects(response, reverse('notary_document_detail', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.COMPLETED)
+
+    def test_successful_completion_sets_status_hash_and_signed_at(self):
+        doc = self._make_doc()
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        self.assertRedirects(response, reverse('notary_document_detail', args=[doc.ref]))
+
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.COMPLETED)
+        self.assertIsNotNone(doc.signed_at)
+        self.assertEqual(len(doc.pdf_hash), 64)  # sha256 hex digest length
+
+    def test_successful_completion_writes_audit_log(self):
+        doc = self._make_doc()
+        self.client.force_login(self.notary.user)
+        self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+
+        entry = AuditLog.objects.get(document=doc)
+        self.assertEqual(entry.user, self.notary.user)
+        self.assertEqual(entry.action, AuditLog.Action.DOCUMENT_COMPLETED)
+
+    def test_cannot_complete_an_already_completed_document(self):
+        doc = self._make_doc()
+        doc.status = Document.Status.COMPLETED
+        doc.save(update_fields=['status'])
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]), follow=True)
+        self.assertContains(response, 'horeyba')
+        self.assertEqual(AuditLog.objects.count(), 0)

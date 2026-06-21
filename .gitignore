@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# manual verification screenshots, not part of the app
+admin_clients.png
+admin_reports.png
+
+.claude/

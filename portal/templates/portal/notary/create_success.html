@@ -1,0 +1,31 @@
+{% extends "portal/base_notary.html" %}
+{% block title %}Dokumeenti la abuuray — Sahal Notary System{% endblock %}
+{% block notary_content %}
+<div style="text-align:center; padding:20px 0 40px; max-width:780px; margin:0 auto;">
+  <div style="width:80px; height:80px; border-radius:50%; background:var(--green-500); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 0 0 16px rgba(34,197,94,0.12); color:#fff; font-size:36px;">✓</div>
+  <h2 style="font-family:var(--font-display); font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 10px;">Dokumeentiga waa la abuuray!</h2>
+  <p style="font-size:15px; color:var(--text-muted); max-width:480px; margin:0 auto 32px; line-height:1.6;">PDF-ka oo leh saxiixa dijitaalka ah iyo shaambo rasmi ah ayaa diyaar. Macmiilku wuxuu ku arki doonaa akoonkiisa.</p>
+  <div style="display:flex; align-items:flex-start; justify-content:center; gap:40px; flex-wrap:wrap;">
+    <div class="card" style="padding:28px 32px; min-width:260px; text-align:left;">
+      <div style="font-size:12px; font-weight:700; color:var(--text-muted); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:16px;">Faahfaahin Dokumeentiga</div>
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; margin-bottom:24px;">
+        <div style="display:flex; justify-content:space-between; gap:16px;"><span style="color:var(--text-muted);">Magaca</span><span style="font-weight:600; color:var(--text-strong);">{{ document.template.title }}</span></div>
+        <div style="display:flex; justify-content:space-between; gap:16px;"><span style="color:var(--text-muted);">Macmiilka</span><span style="font-weight:600; color:var(--text-strong);">{{ document.client.user.get_full_name }}</span></div>
+        <div style="display:flex; justify-content:space-between; gap:16px;"><span style="color:var(--text-muted);">Tixraaca</span><span style="font-family:var(--font-mono); font-weight:600; color:var(--purple-600);">{{ document.ref }}</span></div>
+        <div style="display:flex; justify-content:space-between; gap:16px;"><span style="color:var(--text-muted);">Taariikhda</span><span style="font-weight:600; color:var(--text-strong);">{{ document.created_at|date:"d F Y" }}</span></div>
+      </div>
+      <div style="background:var(--surface-sunken); border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:20px;">
+        <div style="font-size:10px; color:var(--text-muted); font-weight:700; letter-spacing:0.05em; margin-bottom:4px;">SHA-256</div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-body); word-break:break-all;">{{ document.content_hash }}</div>
+      </div>
+      <a href="{% url 'notary_document_pdf' document.ref %}" class="btn btn-primary btn-full">Soo deji PDF-ka</a>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
+      <div style="font-size:13px; font-weight:600; color:var(--text-muted);">Kood QR ah oo xaqiijineed</div>
+      <img src="{% url 'qr_image' document.qr_token %}" alt="QR" style="width:160px; height:160px; border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+      <div style="font-size:12px; color:var(--text-subtle); max-width:200px; text-align:center; line-height:1.5;">Macmiilku wuxuu sawiri karaa si uu u xaqiijiyo dokumeentiga</div>
+    </div>
+  </div>
+  <a href="{% url 'notary_overview' %}" class="btn" style="margin-top:36px;">← Ku noqo Guudmarka</a>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "portal/base.html" %}
+{% block body %}
+<div class="app-shell">
+  <div class="sidebar sidebar-notary">
+    <div class="sidebar-brand">
+      <span class="sidebar-logo" style="background:var(--gradient-brand);">S</span>
+      <div>
+        <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:#fff; line-height:1.15;">Sahal</div>
+        <div style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.45); letter-spacing:0.06em; text-transform:uppercase;">Notary System</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{% url 'notary_overview' %}" class="{% if active_nav == 'overview' %}active{% endif %}">Guudmar</a>
+      <a href="{% url 'notary_templates' %}" class="{% if active_nav == 'templates' %}active{% endif %}">Qaababka</a>
+      <a href="{% url 'notary_create' %}" class="{% if active_nav == 'create' %}active{% endif %}">Samee Dokumeenti</a>
+      <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}">Dokumentiyadayda</a>
+      <a href="{% url 'notary_profile' %}" class="{% if active_nav == 'profile' %}active{% endif %}">Borofaaylka</a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="avatar">{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</span>
+      <div style="flex:1; min-width:0;">
+        <div style="font-family:var(--font-display); font-size:13px; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ request.user.get_full_name }}</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.5);">Notaayo · {{ request.user.notary_profile.region }}</div>
+      </div>
+      <a href="{% url 'logout' %}" style="color:rgba(255,255,255,0.6); font-size:12px;">Ka bax</a>
+    </div>
+  </div>
+  <div class="main-content">
+    {% block notary_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

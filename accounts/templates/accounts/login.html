@@ -1,0 +1,36 @@
+{% extends "portal/base_public.html" %}
+{% block title %}Soo gal — Sahal Notary System{% endblock %}
+{% block public_content %}
+<h1 style="font-family:var(--font-display); font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 6px;">Soo gal akoonkaaga</h1>
+<p style="font-size:14.5px; line-height:1.55; color:var(--text-muted); margin:0 0 24px;">Geli magacaaga iyo furahaaga si aad u gasho.</p>
+
+{% if form.non_field_errors %}
+<div style="background:var(--red-50); border:1px solid var(--red-100); color:var(--red-600); border-radius:var(--radius-md); padding:12px 14px; font-size:13px; margin-bottom:18px;">
+  {{ form.non_field_errors.0 }}
+</div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  <div class="input-field">
+    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+    {{ form.username }}
+  </div>
+  <div class="input-field">
+    <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+    {{ form.password }}
+  </div>
+  <div style="display:flex; align-items:center; gap:8px; margin:10px 0 22px;">
+    {{ form.remember_me }}
+    <label for="{{ form.remember_me.id_for_label }}" style="font-size:13px; color:var(--text-body);">{{ form.remember_me.label }}</label>
+  </div>
+  <button type="submit" class="btn btn-primary btn-full" style="height:54px;">Soo gal</button>
+</form>
+
+<div style="display:flex; align-items:center; gap:10px; margin:22px 0;">
+  <span style="flex:1; height:1px; background:var(--border-subtle);"></span>
+  <span style="font-size:11px; color:var(--text-subtle); font-weight:600; letter-spacing:0.05em;">SUGNAANTAADA AYAA MUHIIM AH</span>
+  <span style="flex:1; height:1px; background:var(--border-subtle);"></span>
+</div>
+<p style="text-align:center; font-size:12px; color:var(--text-subtle); margin:0;">© 2026 Sahal Notary System</p>
+{% endblock %}

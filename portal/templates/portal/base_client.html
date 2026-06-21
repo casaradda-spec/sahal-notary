@@ -1,0 +1,16 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% block body %}
+<div class="mobile-shell">
+  <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 20px; background:var(--white); border-bottom:1px solid var(--border-subtle); position:sticky; top:0; z-index:10;">
+    <img src="{% static 'portal/img/logo-full.jpeg' %}" alt="Sahal Notary System" style="width:78px; height:auto; mix-blend-mode:multiply;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:13px; color:var(--text-muted);">{{ request.user.get_full_name|default:request.user.username }}</span>
+      <a href="{% url 'logout' %}" style="font-size:13px; font-weight:600; color:var(--text-link); text-decoration:none;">Ka bax</a>
+    </div>
+  </div>
+  <div style="padding:20px;">
+    {% block client_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "portal/base_notary.html" %}
+{% block title %}Samee Dokumeenti Cusub — Sahal Notary System{% endblock %}
+{% block notary_content %}
+<div style="max-width:780px;">
+<h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 28px;">Samee Dokumeenti Cusub</h1>
+
+<div style="display:flex; align-items:center; margin-bottom:38px;">
+  {% for n, label in step_labels %}
+  <div style="display:flex; flex-direction:column; align-items:center; gap:6px; width:80px;">
+    <div style="width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px;
+      {% if step_bubble == n %}background:var(--gradient-brand); color:#fff;{% elif step_bubble > n %}background:var(--green-500); color:#fff;{% else %}background:var(--surface-sunken); color:var(--text-muted);{% endif %}">{{ n }}</div>
+    <span style="font-size:11px; font-weight:600; color:var(--text-muted); text-align:center;">{{ label }}</span>
+  </div>
+  {% if not forloop.last %}<div style="flex:1; height:2px; background:{% if step_bubble > n %}var(--green-500){% else %}var(--border-subtle){% endif %};"></div>{% endif %}
+  {% endfor %}
+</div>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ wizard.management_form }}
+
+  {% if wizard.steps.current == 'client' %}
+    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Macmiilka</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Dooro macmiilka heshiiska.</p>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+      {% for radio in wizard.form.client %}
+      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+        {{ radio.tag }}
+        <span>{{ radio.choice_label }}</span>
+      </label>
+      {% endfor %}
+      {% if not wizard.form.client.field.queryset.exists %}
+      <div class="card" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan macaamiil oo diiwaangashan.</div>
+      {% endif %}
+    </div>
+
+  {% elif wizard.steps.current == 'template' %}
+    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Qaabka Dokumeentiga</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Macmiilka la doortay: <strong>{{ selected_client }}</strong></p>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+      {% for radio in wizard.form.template %}
+      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+        {{ radio.tag }}
+        <span>{{ radio.choice_label }}</span>
+      </label>
+      {% endfor %}
+      {% if not wizard.form.template.field.queryset.exists %}
+      <div class="card" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan qaabab. <a href="{% url 'notary_template_new' %}">Samee mid cusub</a>.</div>
+      {% endif %}
+    </div>
+
+  {% elif wizard.steps.current == 'party2' %}
+    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Dhinaca Labaad</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Qaabkani waa heshiis laba-dhinac ah — dooro macmiilka labaad.</p>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+      {% for radio in wizard.form.client2 %}
+      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+        {{ radio.tag }}
+        <span>{{ radio.choice_label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+  {% elif wizard.steps.current == 'witnesses' %}
+    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Marqaatiyaal (Witnesses)</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Geli magacyada iyo telefoonada marqaatiyaasha (ikhtiyaari oo lix).</p>
+    {{ wizard.form.management_form }}
+    <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:28px;">
+      {% for f in wizard.form.forms %}
+      <div class="card" style="padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="input-field"><label>{{ forloop.counter }}. Magaca</label>{{ f.name }}</div>
+        <div class="input-field"><label>Telefoonka</label>{{ f.phone }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% elif wizard.steps.current == 'confirm' %}
+    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dib-u-eeg Dokumeentiga</h2>
+    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Hubi macluumaadka ka hor intaadan xaqiijin.</p>
+    <div class="card" style="overflow:hidden; margin-bottom:24px;">
+      <div style="background:var(--gradient-ink); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;">
+        <span style="color:#fff; font-family:var(--font-display); font-weight:700;">Sahal Notary System</span>
+        <span style="font-family:var(--font-mono); font-size:13px; color:rgba(255,255,255,0.8);">{{ preview_template.title }}</span>
+      </div>
+      <div style="padding:32px 36px;">
+        <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:22px; display:flex; gap:32px; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Dhinaca 1aad</div>
+            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ preview_client }}</div>
+          </div>
+          {% if is_two_party %}
+          <div>
+            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Dhinaca 2aad</div>
+            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ preview_client2 }}</div>
+          </div>
+          {% endif %}
+        </div>
+        <p style="font-size:13.5px; line-height:1.85; color:var(--text-body); white-space:pre-wrap; text-align:justify;">{{ preview_body }}</p>
+        {% if show_witnesses_preview and preview_witnesses %}
+        <div style="margin-top:20px; padding-top:16px; border-top:1px dashed var(--border-subtle);">
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Marqaatiyaal</div>
+          {% for w in preview_witnesses %}
+          <div style="font-size:13.5px; color:var(--text-strong); margin-bottom:4px;">{{ w.name }} — {{ w.phone }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div style="display:flex; justify-content:space-between; margin-top:8px;">
+    {% if wizard.steps.prev %}
+    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn">← Hore</button>
+    {% else %}<span></span>{% endif %}
+    <button type="submit" class="btn btn-primary">{% if wizard.steps.current == 'confirm' %}Xaqiiji &amp; Abuuri →{% else %}Xiga →{% endif %}</button>
+  </div>
+</form>
+</div>
+{% endblock %}

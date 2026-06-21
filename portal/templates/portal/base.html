@@ -1,0 +1,20 @@
+{% load static %}<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Sahal Notary System{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'portal/css/styles.css' %}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% if messages %}
+<div style="position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:500; display:flex; flex-direction:column; gap:8px; width:min(560px,92vw);">
+  {% for message in messages %}
+  <div style="background:{% if 'error' in message.tags %}var(--red-50){% else %}var(--green-50){% endif %}; border:1px solid {% if 'error' in message.tags %}var(--red-100){% else %}var(--green-100){% endif %}; color:{% if 'error' in message.tags %}var(--red-600){% else %}var(--green-700,var(--green-600)){% endif %}; border-radius:var(--radius-md); padding:12px 16px; font-size:13.5px; box-shadow:var(--shadow-md);">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% block body %}{% endblock %}
+</body>
+</html>

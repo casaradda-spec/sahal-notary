@@ -1,0 +1,61 @@
+{% extends "portal/base_client.html" %}
+{% block title %}Dokumentiyadaada — Sahal Notary System{% endblock %}
+{% block client_content %}
+<div style="margin-bottom:4px;">
+  <div style="font-size:13px; color:var(--text-muted);">Ku soo dhowow 👋</div>
+  <div style="font-family:var(--font-display); font-size:20px; font-weight:700; letter-spacing:-0.01em; color:var(--text-strong);">{{ request.user.get_full_name }}</div>
+</div>
+
+<div style="margin-top:18px; border-radius:var(--radius-xl); background:var(--gradient-ink); color:#fff; padding:22px 22px 20px; box-shadow:var(--shadow-lg);">
+  <div style="font-size:12px; letter-spacing:var(--tracking-caps); text-transform:uppercase; color:rgba(255,255,255,0.7); font-weight:600;">Dokumentiyadaada</div>
+  <div style="display:flex; align-items:flex-end; gap:8px; margin-top:6px;">
+    <span style="font-family:var(--font-display); font-size:46px; font-weight:800; line-height:1;">{{ count_total }}</span>
+    <span style="font-size:13px; color:rgba(255,255,255,0.75); margin-bottom:7px;">dukumenti guud ahaan</span>
+  </div>
+  <div style="display:flex; gap:10px; margin-top:18px;">
+    <div style="flex:1; background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.14); border-radius:var(--radius-md); padding:11px 13px;">
+      <div style="display:flex; align-items:center; gap:7px; font-size:12px; color:rgba(255,255,255,0.82);"><span style="width:8px; height:8px; border-radius:50%; background:var(--green-500);"></span>Dhammaystiran</div>
+      <div style="font-family:var(--font-display); font-size:22px; font-weight:700; margin-top:3px;">{{ count_done }}</div>
+    </div>
+    <div style="flex:1; background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.14); border-radius:var(--radius-md); padding:11px 13px;">
+      <div style="display:flex; align-items:center; gap:7px; font-size:12px; color:rgba(255,255,255,0.82);"><span style="width:8px; height:8px; border-radius:50%; background:var(--amber-500);"></span>Sugaya</div>
+      <div style="font-family:var(--font-display); font-size:22px; font-weight:700; margin-top:3px;">{{ count_pending }}</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:flex; gap:9px; padding:18px 0 4px; overflow-x:auto;">
+  {% for value, label in chips %}
+  <a href="?status={{ value }}" class="chip {% if active_status == value %}chip-active{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<div style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+  {% for doc in docs %}
+  <div class="card" style="padding:15px;">
+    <div style="display:flex; align-items:flex-start; gap:13px;">
+      <span style="flex-shrink:0; width:44px; height:44px; border-radius:12px; background:var(--surface-brand-soft); color:var(--purple-600); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700;">📄</span>
+      <div style="flex:1; min-width:0;">
+        <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-strong); line-height:1.3;">{{ doc.template.title }}</div>
+        <div style="display:flex; align-items:center; gap:7px; margin-top:4px; font-size:12px; color:var(--text-muted);">
+          <span style="background:var(--surface-sunken); padding:1px 8px; border-radius:999px; font-weight:600; color:var(--text-body);">{{ doc.template.category }}</span>
+          <span style="font-family:var(--font-mono);">{{ doc.ref }}</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:13px; border-top:1px solid var(--border-subtle);">
+      <span class="pill {% if doc.status == 'PENDING' %}pill-pending{% elif doc.status == 'SIGNED' %}pill-signed{% else %}pill-completed{% endif %}">
+        <span class="pill-dot"></span>{{ doc.get_status_display }}
+      </span>
+      <span style="font-size:11.5px; color:var(--text-subtle);">{{ doc.created_at|date:"d M Y" }}</span>
+      <a href="{% url 'client_document_pdf' doc.ref %}" class="btn" style="height:34px; padding:0 13px; font-size:12.5px;">PDF</a>
+    </div>
+  </div>
+  {% empty %}
+  <div style="text-align:center; padding:40px 20px 30px;">
+    <div style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong);">Weli ma jiraan dokumentiyo</div>
+    <p style="font-size:13.5px; line-height:1.55; color:var(--text-muted); margin:7px auto 0; max-width:260px;">Marka notaayo uu kuu sameeyo dokumenti caddaysan, halkan ayuu ka soo muuqan doonaa.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

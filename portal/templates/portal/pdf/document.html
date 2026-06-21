@@ -1,0 +1,93 @@
+<html>
+<head>
+<style>
+  @page { size: A4; margin: 2.2cm 2cm; }
+  body { font-family: Helvetica, Arial, sans-serif; color: #14213D; font-size: 11pt; }
+  .eyebrow { text-align: center; font-size: 8pt; letter-spacing: 1px; text-transform: uppercase; color: #6B7890; margin-bottom: 6px; }
+  h1 { text-align: center; font-size: 16pt; margin: 0 0 8px; }
+  .meta { text-align: center; font-size: 9pt; color: #6B7890; margin-bottom: 18px; }
+  table.parties { width: 100%; background-color: #F7F8FB; margin-bottom: 16px; }
+  table.parties td { padding: 10px 14px; font-size: 9pt; vertical-align: top; }
+  .label { font-size: 7pt; text-transform: uppercase; color: #6B7890; font-weight: bold; }
+  .name { font-size: 11pt; font-weight: bold; color: #14213D; }
+  p.body-text { font-size: 10pt; line-height: 1.7; text-align: justify; margin-bottom: 8px; }
+  .witnesses { margin-top: 18px; padding-top: 14px; border-top: 1px dashed #CBD3E1; }
+  table.sigrow { width: 100%; margin-top: 24px; border-top: 2px solid #E1E6EF; padding-top: 18px; }
+  table.sigrow td { vertical-align: bottom; padding: 18px 10px 0; }
+  .sig-name { font-style: italic; font-size: 13pt; margin-bottom: 6px; }
+  .sig-line { border-top: 1.5px solid #14213D; margin-bottom: 4px; }
+  .sig-sub { font-size: 8pt; color: #6B7890; }
+  .seal { width: 80px; height: 80px; border: 3px solid #D4A12C; border-radius: 50%; text-align: center; color: #D4A12C; font-size: 7pt; font-weight: bold; }
+  .footer { margin-top: 30px; text-align: center; font-size: 8pt; color: #9AA6BC; }
+</style>
+</head>
+<body>
+<div class="eyebrow">Sahal Notary System - Muqdisho, Soomaaliya</div>
+<h1>{{ document.template.title }}</h1>
+<div class="meta">
+  Taariikhda: <strong>{{ document.created_at|date:"d F Y" }}</strong> &nbsp;|&nbsp;
+  Magaalada: <strong>{{ document.city }}</strong> &nbsp;|&nbsp;
+  {{ document.ref }}
+</div>
+
+<table class="parties"><tr>
+  <td>
+    <div class="label">Dhinaca 1aad</div>
+    <div class="name">{{ document.client.user.get_full_name }}</div>
+    <div style="font-size:8pt; color:#6B7890;">{{ document.city }}, Soomaaliya</div>
+  </td>
+  {% if document.client2 %}
+  <td>
+    <div class="label">Dhinaca 2aad</div>
+    <div class="name">{{ document.client2.user.get_full_name }}</div>
+    <div style="font-size:8pt; color:#6B7890;">{{ document.city }}, Soomaaliya</div>
+  </td>
+  {% endif %}
+</tr></table>
+
+{% for para in document.body_paragraphs %}
+<p class="body-text">{{ para }}</p>
+{% endfor %}
+
+{% if document.witnesses.all %}
+<div class="witnesses">
+  <div class="label">Marqaatiyaal (Witnesses)</div>
+  {% for w in document.witnesses.all %}
+  <p style="font-size:9pt; margin:4px 0;">{{ forloop.counter }}. {{ w.name }} -- {{ w.phone }}</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+<table class="sigrow"><tr>
+  <td style="width:35%;">
+    <div class="label">Saxiixa Dhinaca 1aad</div>
+    <div class="sig-name">{{ document.client.user.get_full_name }}</div>
+    <div class="sig-line"></div>
+    <div class="sig-sub">{{ document.client.user.get_full_name }}</div>
+  </td>
+  {% if document.client2 %}
+  <td style="width:35%;">
+    <div class="label">Saxiixa Dhinaca 2aad</div>
+    <div class="sig-name">{{ document.client2.user.get_full_name }}</div>
+    <div class="sig-line"></div>
+    <div class="sig-sub">{{ document.client2.user.get_full_name }}</div>
+  </td>
+  {% endif %}
+  <td style="width:30%; text-align:center;">
+    <div class="label">Shaambo &amp; Saxiixa Notaayaha</div>
+    <table style="margin:0 auto;"><tr>
+      <td class="seal">
+        {% if document.notary.seal_image %}<img src="{{ document.notary.seal_image.url }}" alt="Shaambadda {{ document.notary.user.get_full_name }}" style="width:74px; height:74px; border-radius:50%; object-fit:cover;">{% else %}S<br>SAHAL<br>NOTARY{% endif %}
+      </td>
+      <td style="padding-left:12px; text-align:left;">
+        <div class="sig-name">{{ document.notary.user.get_full_name }}</div>
+        <div class="sig-line"></div>
+        <div class="sig-sub">{{ document.notary.license_number }}</div>
+      </td>
+    </tr></table>
+  </td>
+</tr></table>
+
+<div class="footer">SHA-256: {{ document.content_hash }}<br>&copy; 2026 Sahal Notary System</div>
+</body>
+</html>
