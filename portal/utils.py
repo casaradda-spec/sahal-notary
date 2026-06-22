@@ -11,6 +11,27 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 
+from accounts.models import User as AccountsUser
+
+from .models import NotaryProfile
+
+
+def get_or_create_notary_profile(user):
+    """Lazily provision a NotaryProfile for an Admin acting as a document signer.
+
+    Notary-role users already get one when their account is created; Admins don't,
+    since they aren't notaries by default — this gives them an identity (initially
+    blank license/seal/bio, editable from their own Profile page) the first time
+    they touch a notary-only feature like the document wizard.
+    """
+    profile, _ = NotaryProfile.objects.get_or_create(user=user)
+    return profile
+
+
+def role_base_template(user):
+    """Pick which sidebar shell a shared Admin/Notary view should render with."""
+    return 'portal/base_admin.html' if user.role == AccountsUser.Role.ADMIN else 'portal/base_notary.html'
+
 
 def slugify_ascii(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')

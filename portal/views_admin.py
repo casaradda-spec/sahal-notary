@@ -9,7 +9,7 @@ from accounts.models import User as AccountsUser
 
 from .forms import ClientCreateForm, NotaryCreateForm
 from .models import ClientProfile, Document, NotaryProfile
-from .utils import decode_signature_data_url, generate_username
+from .utils import decode_signature_data_url, generate_username, role_base_template
 
 User = get_user_model()
 TEMP_PASSWORD = '123'
@@ -22,7 +22,7 @@ def _split_name(full_name):
     return first, last
 
 
-@role_required(AccountsUser.Role.ADMIN)
+@role_required(AccountsUser.Role.ADMIN, AccountsUser.Role.NOTARY)
 def clients_view(request):
     if request.method == 'POST':
         form = ClientCreateForm(request.POST)
@@ -63,11 +63,11 @@ def clients_view(request):
     return render(
         request,
         'portal/admin/clients.html',
-        {'form': form, 'clients': clients, 'tab': tab, 'active_nav': 'clients'},
+        {'form': form, 'clients': clients, 'tab': tab, 'active_nav': 'clients', 'base_template': role_base_template(request.user)},
     )
 
 
-@role_required(AccountsUser.Role.ADMIN)
+@role_required(AccountsUser.Role.ADMIN, AccountsUser.Role.NOTARY)
 def client_signature(request, pk):
     profile = get_object_or_404(ClientProfile.objects.select_related('user'), pk=pk)
     if request.method == 'POST':
@@ -81,7 +81,7 @@ def client_signature(request, pk):
     return render(
         request,
         'portal/admin/client_signature.html',
-        {'profile': profile, 'active_nav': 'clients'},
+        {'profile': profile, 'active_nav': 'clients', 'base_template': role_base_template(request.user)},
     )
 
 
@@ -118,7 +118,12 @@ def notaries_view(request):
         form = NotaryCreateForm()
         tab = request.GET.get('tab', 'list')
 
-    notaries = NotaryProfile.objects.select_related('user').annotate(doc_count=Count('documents')).order_by('-created_at')
+    notaries = (
+        NotaryProfile.objects.filter(user__role=AccountsUser.Role.NOTARY)
+        .select_related('user')
+        .annotate(doc_count=Count('documents'))
+        .order_by('-created_at')
+    )
     return render(
         request,
         'portal/admin/notaries.html',
@@ -129,7 +134,8 @@ def notaries_view(request):
 @role_required(AccountsUser.Role.ADMIN)
 def reports(request):
     notaries = (
-        NotaryProfile.objects.select_related('user')
+        NotaryProfile.objects.filter(user__role=AccountsUser.Role.NOTARY)
+        .select_related('user')
         .annotate(doc_count=Count('documents'))
         .order_by('-doc_count')
     )
@@ -147,7 +153,7 @@ def reports(request):
     context = {
         'total_docs': Document.objects.count(),
         'total_clients': ClientProfile.objects.count(),
-        'total_notaries': NotaryProfile.objects.count(),
+        'total_notaries': notaries.count(),
         'notary_bars': notary_bars,
         'recent': recent,
         'active_nav': 'reports',

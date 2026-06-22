@@ -1,13 +1,14 @@
-{% extends "portal/base_notary.html" %}
-{% block title %}Dokumentiyadayda — Sahal Notary System{% endblock %}
-{% block notary_content %}
-<h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 24px;">Dokumentiyadayda</h1>
+{% extends base_template %}
+{% block title %}Dhammaan Dokumentiyada — Sahal Notary System{% endblock %}
+{% block content %}
+<h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 24px;">Dhammaan Dokumentiyada</h1>
 <div class="card" style="overflow:hidden;">
   <table>
     <thead><tr style="background:var(--surface-sunken);">
       <th style="padding:11px 24px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">TIXRAAC</th>
       <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MAGACA DOKUMEENTIGA</th>
       <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MACMIILKA</th>
+      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">NOTAAYADA</th>
       <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">NOOCA</th>
       <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">XAALADDA</th>
       <th style="padding:11px 24px 11px 16px; font-size:11.5px; font-weight:700; text-align:right; color:var(--text-muted);">FICIL</th>
@@ -18,6 +19,7 @@
         <td style="padding:13px 24px; font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);">{{ doc.ref }}</td>
         <td style="padding:13px 16px; font-size:14px; font-weight:500; color:var(--text-strong);">{{ doc.template.title }}</td>
         <td style="padding:13px 16px; font-size:13.5px; color:var(--text-body);">{{ doc.client.user.get_full_name }}</td>
+        <td style="padding:13px 16px; font-size:13.5px; color:var(--text-body);">{{ doc.notary.user.get_full_name }}</td>
         <td style="padding:13px 16px;"><span style="display:inline-flex; align-items:center; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:600; background:var(--surface-sunken); color:var(--text-body);">{{ doc.template.category }}</span></td>
         <td style="padding:13px 16px;">
           <span class="pill {% if doc.status == 'PENDING' %}pill-pending{% elif doc.status == 'SIGNED' %}pill-signed{% else %}pill-completed{% endif %}">
@@ -30,7 +32,7 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="6" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan dokumentiyo.</td></tr>
+      <tr><td colspan="7" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan dokumentiyo.</td></tr>
       {% endfor %}
     </tbody>
   </table>

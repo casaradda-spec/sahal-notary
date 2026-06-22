@@ -1,8 +1,8 @@
-{% extends "portal/base_notary.html" %}
-{% block title %}Samee Qaab Cusub — Sahal Notary System{% endblock %}
-{% block notary_content %}
+{% extends base_template %}
+{% block title %}{% if template %}Wax ka beddel Qaabka{% else %}Samee Qaab Cusub{% endif %} — Sahal Notary System{% endblock %}
+{% block content %}
 <div style="max-width:680px;">
-  <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 6px;">Samee Qaab Cusub</h1>
+  <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 6px;">{% if template %}Wax ka beddel Qaabka{% else %}Samee Qaab Cusub{% endif %}</h1>
   <p style="font-size:14px; color:var(--text-muted); margin:0 0 24px;">Qor qoraalka qaabka oo kaydi.</p>
 
   <form method="post" class="card" style="padding:28px; display:flex; flex-direction:column; gap:18px;">
@@ -32,7 +32,7 @@
     </div>
     <div style="display:flex; gap:12px; margin-top:6px;">
       <a href="{% url 'notary_templates' %}" class="btn">Jooji</a>
-      <button type="submit" class="btn btn-primary" style="flex:1;">Kaydi Qaabka</button>
+      <button type="submit" class="btn btn-primary" style="flex:1;">{% if template %}Kaydi Isbeddelka{% else %}Kaydi Qaabka{% endif %}</button>
     </div>
   </form>
 </div>

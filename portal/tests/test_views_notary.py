@@ -4,7 +4,7 @@ from django.urls import reverse
 from portal.models import AuditLog, Document, DocumentTemplate, Witness
 
 from .base import TempMediaTestCase
-from .factories import make_client_profile, make_notary_profile, make_template
+from .factories import make_admin_user, make_client_profile, make_notary_profile, make_template
 
 
 class NotaryOverviewTests(TestCase):
@@ -31,6 +31,12 @@ class NotaryOverviewTests(TestCase):
 
     def test_wrong_role_forbidden(self):
         self.client.force_login(self.client_profile.user)
+        response = self.client.get(reverse('notary_overview'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_forbidden_overview_is_notary_only(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
         response = self.client.get(reverse('notary_overview'))
         self.assertEqual(response.status_code, 403)
 
@@ -69,27 +75,109 @@ class TemplateListAndCreateTests(TestCase):
         created = DocumentTemplate.objects.get(title='Power of Attorney')
         self.assertEqual(created.created_by, self.notary)
 
+    def test_admin_can_list_and_create_templates(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.get(reverse('notary_templates'))
+        self.assertEqual(response.status_code, 200)
 
-class NotaryMyDocumentsTests(TestCase):
-    def test_only_shows_this_notarys_documents(self):
-        notary = make_notary_profile('mydocsnotary')
-        other_notary = make_notary_profile('othermydocsnotary')
-        template = make_template(created_by=notary)
-        client_profile = make_client_profile('mydocsclient')
+        response = self.client.post(reverse('notary_template_new'), {
+            'title': 'Admin Made Template',
+            'category': 'Wakaalad',
+            'party_type': DocumentTemplate.PartyType.ONE,
+            'requires_witnesses': False,
+            'body': '{{client_name}} {{date}} {{city}} {{notary_name}} {{notary_license}} {{ref}}',
+        })
+        self.assertRedirects(response, reverse('notary_templates'))
+        self.assertTrue(DocumentTemplate.objects.filter(title='Admin Made Template').exists())
 
-        own_doc = Document(template=template, notary=notary, client=client_profile, city='Muqdisho')
-        own_doc.finalize()
-        own_doc.save()
+    def test_wrong_role_forbidden(self):
+        client_profile = make_client_profile('tplaccessclient')
+        self.client.force_login(client_profile.user)
+        response = self.client.get(reverse('notary_templates'))
+        self.assertEqual(response.status_code, 403)
 
-        other_doc = Document(template=template, notary=other_notary, client=client_profile, city='Muqdisho')
-        other_doc.finalize()
-        other_doc.save()
 
-        self.client.force_login(notary.user)
+class TemplateEditDeleteTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('editdeletenotary')
+        self.template = make_template(title='Editable', created_by=self.notary)
+
+    def test_notary_can_edit_template(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_template_edit', args=[self.template.pk]), {
+            'title': 'Renamed',
+            'category': self.template.category,
+            'party_type': self.template.party_type,
+            'requires_witnesses': False,
+            'body': self.template.body,
+        })
+        self.assertRedirects(response, reverse('notary_templates'))
+        self.template.refresh_from_db()
+        self.assertEqual(self.template.title, 'Renamed')
+
+    def test_admin_can_edit_template(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.post(reverse('notary_template_edit', args=[self.template.pk]), {
+            'title': 'Renamed By Admin',
+            'category': self.template.category,
+            'party_type': self.template.party_type,
+            'requires_witnesses': False,
+            'body': self.template.body,
+        })
+        self.assertRedirects(response, reverse('notary_templates'))
+        self.template.refresh_from_db()
+        self.assertEqual(self.template.title, 'Renamed By Admin')
+
+    def test_unused_template_can_be_deleted(self):
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_template_delete', args=[self.template.pk]))
+        self.assertRedirects(response, reverse('notary_templates'))
+        self.assertFalse(DocumentTemplate.objects.filter(pk=self.template.pk).exists())
+
+    def test_used_template_cannot_be_deleted(self):
+        DocumentTemplate.objects.filter(pk=self.template.pk).update(times_used=1)
+        self.client.force_login(self.notary.user)
+        response = self.client.post(reverse('notary_template_delete', args=[self.template.pk]), follow=True)
+        self.assertContains(response, 'lama tirtiri karo')
+        self.assertTrue(DocumentTemplate.objects.filter(pk=self.template.pk).exists())
+
+
+class AllDocumentsTests(TestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('mydocsnotary')
+        self.other_notary = make_notary_profile('othermydocsnotary')
+        self.template = make_template(created_by=self.notary)
+        self.client_profile = make_client_profile('mydocsclient')
+
+        self.own_doc = Document(template=self.template, notary=self.notary, client=self.client_profile, city='Muqdisho')
+        self.own_doc.finalize()
+        self.own_doc.save()
+
+        self.other_doc = Document(template=self.template, notary=self.other_notary, client=self.client_profile, city='Muqdisho')
+        self.other_doc.finalize()
+        self.other_doc.save()
+
+    def test_notary_sees_documents_from_every_notary(self):
+        self.client.force_login(self.notary.user)
         response = self.client.get(reverse('notary_documents'))
         docs = list(response.context['docs'])
-        self.assertIn(own_doc, docs)
-        self.assertNotIn(other_doc, docs)
+        self.assertIn(self.own_doc, docs)
+        self.assertIn(self.other_doc, docs)
+
+    def test_admin_sees_documents_from_every_notary(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.get(reverse('notary_documents'))
+        docs = list(response.context['docs'])
+        self.assertIn(self.own_doc, docs)
+        self.assertIn(self.other_doc, docs)
+
+    def test_client_role_forbidden(self):
+        self.client.force_login(self.client_profile.user)
+        response = self.client.get(reverse('notary_documents'))
+        self.assertEqual(response.status_code, 403)
 
 
 class NotaryDocumentPdfAndSuccessTests(TestCase):
@@ -108,10 +196,11 @@ class NotaryDocumentPdfAndSuccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
 
-    def test_other_notary_gets_404_for_pdf(self):
+    def test_other_notary_can_also_download_pdf(self):
         self.client.force_login(self.other_notary.user)
         response = self.client.get(reverse('notary_document_pdf', args=[self.doc.ref]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
 
     def test_other_notary_gets_404_for_success_page(self):
         self.client.force_login(self.other_notary.user)
@@ -141,10 +230,22 @@ class NotaryDocumentDetailTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['document'], self.doc)
 
-    def test_other_notary_gets_404(self):
+    def test_other_notary_can_also_view_detail_page(self):
         self.client.force_login(self.other_notary.user)
         response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['document'], self.doc)
+
+    def test_admin_can_view_detail_page(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_client_role_forbidden(self):
+        self.client.force_login(self.client_profile.user)
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 403)
 
     def test_complete_button_only_shown_when_pending(self):
         self.client.force_login(self.notary.user)
@@ -177,11 +278,22 @@ class DocumentCompletionTests(TempMediaTestCase):
         doc.refresh_from_db()
         self.assertEqual(doc.status, Document.Status.PENDING)
 
-    def test_other_notary_gets_404(self):
+    def test_other_notary_can_also_complete_the_document(self):
         doc = self._make_doc()
         self.client.force_login(self.other_notary.user)
         response = self.client.post(reverse('notary_document_complete', args=[doc.ref]))
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, reverse('notary_document_detail', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.COMPLETED)
+
+    def test_admin_can_complete_the_document(self):
+        doc = self._make_doc()
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.post(reverse('notary_document_complete', args=[doc.ref]))
+        self.assertRedirects(response, reverse('notary_document_detail', args=[doc.ref]))
+        doc.refresh_from_db()
+        self.assertEqual(doc.status, Document.Status.COMPLETED)
 
     def test_blocks_completion_when_client_signature_missing(self):
         unsigned_client = make_client_profile('nosigclient')

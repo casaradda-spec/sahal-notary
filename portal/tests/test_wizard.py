@@ -1,9 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from portal.models import Document, DocumentTemplate, Witness
+from portal.models import Document, DocumentTemplate, NotaryProfile, Witness
 
-from .factories import make_client_profile, make_notary_profile, make_template
+from .factories import make_admin_user, make_client_profile, make_notary_profile, make_template
 
 WIZARD_URL = reverse('notary_create')
 PREFIX = 'create_document_wizard'
@@ -25,6 +25,33 @@ class WizardAccessTests(TestCase):
         self.client.force_login(client_profile.user)
         response = self.client.get(WIZARD_URL)
         self.assertEqual(response.status_code, 403)
+
+    def test_admin_can_access(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.get(WIZARD_URL)
+        self.assertEqual(response.status_code, 200)
+
+
+class AdminCreatesDocumentTests(TestCase):
+    """Admin and Notary share the document-creation wizard; an Admin has no NotaryProfile
+    of their own, so one is lazily provisioned to stand in as the document's signer."""
+
+    def setUp(self):
+        self.admin = make_admin_user()
+        self.template = make_template(party_type=DocumentTemplate.PartyType.ONE, requires_witnesses=False)
+        self.solo_client = make_client_profile('adminwizardclient', first='Amina', last='Yusuf')
+        self.client.force_login(self.admin)
+
+    def test_admin_completes_wizard_and_is_provisioned_a_notary_profile(self):
+        post_step(self.client, 'client', {'client-client': self.solo_client.pk})
+        post_step(self.client, 'template', {'template-template': self.template.pk})
+        response = post_step(self.client, 'confirm', {})
+        doc = Document.objects.get()
+        self.assertRedirects(response, reverse('notary_create_success', args=[doc.ref]))
+
+        notary_profile = NotaryProfile.objects.get(user=self.admin)
+        self.assertEqual(doc.notary, notary_profile)
 
 
 class TwoPartyNoWitnessWizardTests(TestCase):

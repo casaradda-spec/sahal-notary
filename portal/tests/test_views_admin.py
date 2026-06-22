@@ -17,10 +17,16 @@ class ClientsViewAccessTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_wrong_role_forbidden(self):
-        notary = make_notary_profile('notaccessnotary')
-        self.client.force_login(notary.user)
+        client_profile = make_client_profile('notaccessclient')
+        self.client.force_login(client_profile.user)
         response = self.client.get(reverse('admin_clients'))
         self.assertEqual(response.status_code, 403)
+
+    def test_notary_can_access(self):
+        notary = make_notary_profile('clientsaccessnotary')
+        self.client.force_login(notary.user)
+        response = self.client.get(reverse('admin_clients'))
+        self.assertEqual(response.status_code, 200)
 
 
 class ClientCreationTests(TestCase):
@@ -95,10 +101,16 @@ class ClientSignatureViewTests(TempMediaTestCase):
         self.profile = make_client_profile('siguser')
 
     def test_wrong_role_forbidden(self):
+        client_profile = make_client_profile('sigclientview')
+        self.client.force_login(client_profile.user)
+        response = self.client.get(reverse('admin_client_signature', args=[self.profile.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_notary_can_access(self):
         notary = make_notary_profile('signotaryview')
         self.client.force_login(notary.user)
         response = self.client.get(reverse('admin_client_signature', args=[self.profile.pk]))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_renders_capture_page(self):
         response = self.client.get(reverse('admin_client_signature', args=[self.profile.pk]))
@@ -130,6 +142,12 @@ class NotaryCreationTests(TestCase):
         self.admin = make_admin_user()
         self.client.force_login(self.admin)
 
+    def test_notary_role_forbidden_from_registering_notaries(self):
+        notary = make_notary_profile('notaryregisterattempt')
+        self.client.force_login(notary.user)
+        response = self.client.get(reverse('admin_notaries'))
+        self.assertEqual(response.status_code, 403)
+
     def test_creates_user_and_profile(self):
         response = self.client.post(reverse('admin_notaries'), {
             'full_name': 'Nasra Warsame',
@@ -146,11 +164,22 @@ class NotaryCreationTests(TestCase):
         self.assertEqual(profile.license_number, 'NOT-2024-099')
         self.assertEqual(profile.region, 'Banaadir')
 
+    def test_admins_auto_provisioned_notary_profile_excluded_from_listing(self):
+        NotaryProfile.objects.create(user=self.admin)
+        response = self.client.get(reverse('admin_notaries'))
+        self.assertEqual(list(response.context['notaries']), [])
+
 
 class ReportsTests(TestCase):
     def setUp(self):
         self.admin = make_admin_user()
         self.client.force_login(self.admin)
+
+    def test_notary_role_forbidden_from_reports(self):
+        notary = make_notary_profile('notaryreportsattempt')
+        self.client.force_login(notary.user)
+        response = self.client.get(reverse('admin_reports'))
+        self.assertEqual(response.status_code, 403)
 
     def test_aggregates_reflect_real_data(self):
         notary_busy = make_notary_profile('busynotary', first='Busy', last='Notary')
@@ -176,3 +205,12 @@ class ReportsTests(TestCase):
         self.assertEqual(bars[notary_busy.user.get_full_name()]['pct'], 100)
         self.assertEqual(bars[notary_quiet.user.get_full_name()]['count'], 1)
         self.assertEqual(bars[notary_quiet.user.get_full_name()]['pct'], 25)
+
+    def test_admins_auto_provisioned_notary_profile_excluded_from_notary_stats(self):
+        # An Admin acting as a document signer lazily gets a NotaryProfile (see
+        # get_or_create_notary_profile) — it shouldn't pollute the notary leaderboard.
+        NotaryProfile.objects.create(user=self.admin)
+
+        response = self.client.get(reverse('admin_reports'))
+        self.assertEqual(response.context['total_notaries'], 0)
+        self.assertEqual(list(response.context['notary_bars']), [])

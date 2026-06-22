@@ -1,7 +1,7 @@
-{% extends "portal/base_admin.html" %}
+{% extends base_template %}
 {% load static %}
 {% block title %}Saxiixa {{ profile.user.get_full_name }} — Sahal Notary System{% endblock %}
-{% block admin_content %}
+{% block content %}
 <div style="max-width:560px;">
   <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 6px;">Saxiixa {{ profile.user.get_full_name }}</h1>
   <p style="font-size:14px; color:var(--text-muted); margin:0 0 24px;">Sawir oo cusub buuxi haddii aad rabto inaad bedesho saxiixa hadda jira.</p>

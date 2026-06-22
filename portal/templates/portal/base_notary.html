@@ -10,10 +10,10 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a href="{% url 'notary_overview' %}" class="{% if active_nav == 'overview' %}active{% endif %}">Guudmar</a>
+      <a href="{% url 'admin_clients' %}" class="{% if active_nav == 'clients' %}active{% endif %}">Macaamiisha</a>
       <a href="{% url 'notary_templates' %}" class="{% if active_nav == 'templates' %}active{% endif %}">Qaababka</a>
       <a href="{% url 'notary_create' %}" class="{% if active_nav == 'create' %}active{% endif %}">Samee Dokumeenti</a>
-      <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}">Dokumentiyadayda</a>
+      <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}">Dhammaan Dokumentiyada</a>
       <a href="{% url 'notary_profile' %}" class="{% if active_nav == 'profile' %}active{% endif %}">Borofaaylka</a>
     </nav>
     <div class="sidebar-foot">
@@ -26,7 +26,7 @@
     </div>
   </div>
   <div class="main-content">
-    {% block notary_content %}{% endblock %}
+    {% block content %}{% endblock %}
   </div>
 </div>
 {% endblock %}

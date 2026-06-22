@@ -1,6 +1,6 @@
-{% extends "portal/base_notary.html" %}
+{% extends base_template %}
 {% block title %}{{ document.ref }} — Sahal Notary System{% endblock %}
-{% block notary_content %}
+{% block content %}
 <div style="max-width:780px;">
   <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px;">
     <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0;">{{ document.template.title }}</h1>

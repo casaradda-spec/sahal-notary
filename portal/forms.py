@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ClientProfile, DocumentTemplate
+from .models import ClientProfile, DocumentTemplate, NotaryProfile
 
 
 class ClientCreateForm(forms.Form):
@@ -32,6 +32,20 @@ class DocumentTemplateForm(forms.ModelForm):
         }
         widgets = {
             'body': forms.Textarea(attrs={'rows': 12}),
+        }
+
+
+class NotaryProfileForm(forms.ModelForm):
+    class Meta:
+        model = NotaryProfile
+        fields = ['phone', 'bio', 'seal_image']
+        labels = {
+            'phone': 'Telefoonka',
+            'bio': 'Taariikhda Shaqsiyeed',
+            'seal_image': 'Sawirka Shaambooyinka',
+        }
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4}),
         }
 
 

@@ -30,6 +30,7 @@ class NotaryProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notary_profile')
     license_number = models.CharField('Lambarka Ruqsadda', max_length=40, blank=True)
     region = models.CharField('Gobolka', max_length=80, blank=True)
+    phone = models.CharField('Telefoonka', max_length=30, blank=True)
     seal_image = models.ImageField('Sawirka Shaambooyinka', upload_to='seals/', blank=True, null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0)
     bio = models.TextField(blank=True)

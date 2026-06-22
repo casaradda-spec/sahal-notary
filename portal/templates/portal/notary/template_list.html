@@ -1,6 +1,6 @@
-{% extends "portal/base_notary.html" %}
+{% extends base_template %}
 {% block title %}Qaababka — Sahal Notary System{% endblock %}
-{% block notary_content %}
+{% block content %}
 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
   <div>
     <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Qaababka</h1>
@@ -27,6 +27,15 @@
         <span style="display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:600; background:var(--surface-brand-soft); color:var(--purple-600);">{{ tpl.party_label }}</span>
         <span style="font-size:12.5px; color:var(--text-muted);">Loo isticmaalay {{ tpl.times_used }} jeer</span>
       </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-shrink:0;">
+      <a href="{% url 'notary_template_edit' tpl.pk %}" class="btn" style="height:36px; padding:0 16px; font-size:13px;">Wax ka beddel</a>
+      {% if tpl.times_used == 0 %}
+      <form method="post" action="{% url 'notary_template_delete' tpl.pk %}" style="margin:0;" onsubmit="return confirm('Ma hubtaa inaad tirtirto qaabkan?');">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="height:36px; padding:0 16px; font-size:13px; color:var(--red-600);">Tirtir</button>
+      </form>
+      {% endif %}
     </div>
   </div>
   {% empty %}

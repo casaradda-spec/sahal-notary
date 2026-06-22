@@ -1,6 +1,6 @@
-{% extends "portal/base_notary.html" %}
+{% extends base_template %}
 {% block title %}Borofaaylka — Sahal Notary System{% endblock %}
-{% block notary_content %}
+{% block content %}
 <div style="max-width:620px;">
   <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 28px;">Borofaaylka</h1>
   <div class="card" style="overflow:hidden;">
@@ -25,6 +25,26 @@
       </div>
       {% endif %}
     </div>
+  </div>
+
+  <div class="card" style="margin-top:24px; padding:28px 36px;">
+    <h2 style="font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--text-strong); margin:0 0 18px;">Wax ka beddel Borofaaylka</h2>
+    <form method="post" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:18px;">
+      {% csrf_token %}
+      <div class="input-field">
+        <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+        {{ form.phone }}
+      </div>
+      <div class="input-field">
+        <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+        {{ form.bio }}
+      </div>
+      <div class="input-field">
+        <label for="{{ form.seal_image.id_for_label }}">{{ form.seal_image.label }}</label>
+        {{ form.seal_image }}
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Kaydi Isbeddelka</button>
+    </form>
   </div>
 </div>
 {% endblock %}

@@ -10,6 +10,7 @@ from .forms import (
     WitnessFormSet,
 )
 from .models import ClientProfile, Document, DocumentTemplate, Witness
+from .utils import get_or_create_notary_profile, role_base_template
 
 
 def show_party2(wizard):
@@ -63,6 +64,7 @@ class CreateDocumentWizard(SessionWizardView):
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form=form, **kwargs)
         context['active_nav'] = 'create'
+        context['base_template'] = role_base_template(self.request.user)
         context['step_bubble'] = self.STEP_BUBBLE.get(self.steps.current, 1)
         context['step_labels'] = [(1, 'Macmiilka'), (2, 'Qaabka'), (3, 'Dib-u-eeg'), (4, 'Xaqiiji')]
         if self.steps.current == 'template':
@@ -92,7 +94,8 @@ class CreateDocumentWizard(SessionWizardView):
 
         preview_body = ''
         if template and client:
-            preview = Document(template=template, notary=self.request.user.notary_profile, client=client, client2=client2, city='Muqdisho')
+            notary_profile = get_or_create_notary_profile(self.request.user)
+            preview = Document(template=template, notary=notary_profile, client=client, client2=client2, city='Muqdisho')
             preview_body = preview.render_body()
 
         return {
@@ -115,7 +118,7 @@ class CreateDocumentWizard(SessionWizardView):
 
         document = Document(
             template=template,
-            notary=self.request.user.notary_profile,
+            notary=get_or_create_notary_profile(self.request.user),
             client=client,
             client2=client2,
             city='Muqdisho',
