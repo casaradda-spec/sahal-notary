@@ -1,55 +1,102 @@
 {% extends "portal/base_admin.html" %}
-{% block title %}Notaayada — Sahal Notary System{% endblock %}
+{% load static i18n icons %}
+{% block title %}{% trans "Notaries" %} — {% trans "Sahal Notary System" %}{% endblock %}
 {% block content %}
-<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px;">
   <div>
-    <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Notaayada</h1>
-    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{{ notaries|length }} notaayo oo shaqeeya</p>
+    <h1 style="font-size:28px; font-weight:800; letter-spacing:var(--tracking-tight); color:var(--text-strong); margin:0 0 5px;">{% trans "Notaries" %}</h1>
+    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{% blocktrans count counter=notaries|length %}{{ counter }} active notary{% plural %}{{ counter }} active notaries{% endblocktrans %}</p>
   </div>
   <div style="display:flex; gap:10px;">
-    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">Liiska</a>
-    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">+ Kudar Notaayo</a>
+    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">{% icon "rectangle-stack" size=15 %}{% trans "List" %}</a>
+    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">{% icon "plus" size=15 %}{% trans "Add Notary" %}</a>
   </div>
 </div>
 
 {% if tab == 'add' %}
-<form method="post" enctype="multipart/form-data" class="card" style="padding:36px; max-width:620px; display:flex; flex-direction:column; gap:18px;">
+<form method="post" enctype="multipart/form-data" class="card" style="padding:36px; max-width:620px; display:flex; flex-direction:column; gap:18px;" id="add-notary-form">
   {% csrf_token %}
-  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px;">Kudar Notaayo Cusub</h2>
-  <div class="input-field"><label>{{ form.full_name.label }}</label>{{ form.full_name }}</div>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
-    <div class="input-field"><label>{{ form.license_number.label }}</label>{{ form.license_number }}</div>
-    <div class="input-field"><label>{{ form.region.label }}</label>{{ form.region }}</div>
+  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px; display:flex; align-items:center; gap:10px;">{% icon "shield-check" size=22 css_class="icon-brand" %}{% trans "Add New Notary" %}</h2>
+  <div class="input-field {% if form.full_name.errors %}has-error{% endif %}">
+    <label>{{ form.full_name.label }}</label>
+    {{ form.full_name }}
+    {% for error in form.full_name.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
   </div>
-  <div class="input-field"><label>{{ form.seal_image.label }}</label>{{ form.seal_image }}</div>
-  <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 16px; font-size:12.5px; color:var(--text-muted);">
-    Username-ka iyo furaha hore ee "123" ayaa si toos ah loo abuuri doonaa.
+  <div class="input-field {% if form.phone.errors %}has-error{% endif %}">
+    <label>{{ form.phone.label }}</label>
+    {{ form.phone }}
+    {% for error in form.phone.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+    <div class="input-field {% if form.license_number.errors %}has-error{% endif %}">
+      <label>{{ form.license_number.label }}</label>
+      {{ form.license_number }}
+      {% for error in form.license_number.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
+    <div class="input-field {% if form.region.errors %}has-error{% endif %}">
+      <label>{{ form.region.label }}</label>
+      {{ form.region }}
+      {% for error in form.region.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
+  </div>
+  <div>
+    <div style="font-size:13.5px; font-weight:600; color:var(--text-strong); margin-bottom:7px; display:flex; align-items:center; gap:7px;">{% icon "signature" size=16 %}{% trans "Notary's Signature" %}</div>
+    <div class="signature-pad-wrap">
+      <canvas id="add-notary-signature-canvas" class="signature-pad-canvas" width="480" height="150" style="width:100%; max-width:480px; height:150px;"></canvas>
+    </div>
+    <div style="margin-top:8px;">
+      <button type="button" id="add-notary-signature-clear" class="btn btn-ghost btn-sm">{% icon "trash" size=14 %}{% trans "Clear" %}</button>
+    </div>
+    {{ form.signature_data }}
+    {% for error in form.signature_data.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+  </div>
+  <div class="input-field">
+    <label>{{ form.seal_image.label }}</label>
+    {{ form.seal_image }}
+  </div>
+  <div class="alert alert-info">
+    {% icon "exclamation-triangle" size=16 %}
+    <span>{% trans 'A username and temporary password ("123") will be created automatically.' %}</span>
   </div>
   <div style="display:flex; gap:12px;">
-    <a href="?tab=list" class="btn">Jooji</a>
-    <button type="submit" class="btn" style="flex:1; background:linear-gradient(135deg,var(--teal-500),var(--purple-600)); color:#fff; border:none;">Kudar Notaayo</button>
+    <a href="?tab=list" class="btn btn-secondary">{% trans "Cancel" %}</a>
+    <button type="submit" class="btn btn-primary" style="flex:1;">{% icon "check" size=16 %}{% trans "Add Notary" %}</button>
   </div>
 </form>
+<script src="{% static 'portal/js/signature_pad.js' %}"></script>
+<script>initSignaturePad('add-notary-signature-canvas', '{{ form.signature_data.id_for_label }}', 'add-notary-signature-clear');</script>
 
 {% else %}
-<div style="display:flex; flex-direction:column; gap:14px;">
+<div style="display:flex; flex-direction:column; gap:14px;" class="page-enter-stagger">
   {% for nt in notaries %}
-  <div class="card" style="padding:22px 26px; display:flex; align-items:center; gap:20px;">
-    <span class="avatar" style="width:56px; height:56px; font-size:18px; background:var(--gradient-ink);">{{ nt.user.first_name|slice:":1" }}{{ nt.user.last_name|slice:":1" }}</span>
-    <div style="flex:1; min-width:0;">
+  <div class="card card-hover" style="padding:22px 26px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+    <span class="avatar" style="width:56px; height:56px; font-size:18px;">{{ nt.user.first_name|slice:":1" }}{{ nt.user.last_name|slice:":1" }}</span>
+    <div style="flex:1; min-width:160px;">
       <div style="font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--text-strong);">{{ nt.user.get_full_name }}</div>
       <div style="display:flex; align-items:center; gap:14px; margin-top:5px; font-size:13px; color:var(--text-muted);">
-        <span style="font-family:var(--font-mono);">{{ nt.license_number }}</span><span>·</span><span>{{ nt.region }}</span>
+        <span class="cell-mono">{{ nt.license_number }}</span><span>&middot;</span><span>{{ nt.region }}</span>
       </div>
     </div>
-    <div style="display:flex; align-items:center; gap:24px; flex-shrink:0;">
-      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--text-strong);">{{ nt.doc_count }}</div><div style="font-size:11.5px; color:var(--text-muted);">dokumeenti</div></div>
-      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--gold-500);">{{ nt.rating }}</div><div style="font-size:11.5px; color:var(--text-muted);">qiimeyn</div></div>
-      <div style="display:inline-flex; align-items:center; gap:7px; background:var(--green-50); border:1px solid var(--green-100); border-radius:999px; padding:5px 14px;"><span style="width:7px; height:7px; border-radius:50%; background:var(--green-500);"></span><span style="font-size:12.5px; color:var(--green-700,var(--green-600)); font-weight:600;">Shaqeeya</span></div>
+    <div style="display:flex; align-items:center; gap:22px; flex-shrink:0; flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--text-strong);">{{ nt.doc_count }}</div><div style="font-size:11.5px; color:var(--text-muted);">{% trans "documents" %}</div></div>
+      <div style="text-align:center;"><div style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--gold-500);">{{ nt.rating }}</div><div style="font-size:11.5px; color:var(--text-muted);">{% trans "rating" %}</div></div>
+      <span class="pill pill-completed"><span class="pill-dot"></span>{% trans "Active" %}</span>
+      <div style="display:inline-flex; gap:6px;">
+        <a href="{% url 'admin_notary_edit' nt.pk %}" class="btn btn-secondary btn-sm">{% icon "pencil-square" size=14 %}{% trans "Edit" %}</a>
+        <form method="post" action="{% url 'admin_notary_delete' nt.pk %}" style="margin:0;" onsubmit="return confirm('{% blocktrans with full_name=nt.user.get_full_name|escapejs %}Are you sure you want to delete {{ full_name }}?{% endblocktrans %}');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm">{% icon "trash" size=14 %}{% trans "Delete" %}</button>
+        </form>
+      </div>
     </div>
   </div>
   {% empty %}
-  <div class="card" style="padding:36px; text-align:center; color:var(--text-muted);">Wali ma jiraan notaayo.</div>
+  <div class="card">
+    <div class="empty-state">
+      {% icon "shield-check" size=36 %}
+      <div class="empty-state-title">{% trans "No notaries yet." %}</div>
+    </div>
+  </div>
   {% endfor %}
 </div>
 {% endif %}

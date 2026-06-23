@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from portal.models import Document, DocumentTemplate, NotaryProfile, Witness
 
+from .base import TempMediaTestCase
 from .factories import make_admin_user, make_client_profile, make_notary_profile, make_template
 
 WIZARD_URL = reverse('notary_create')
@@ -32,15 +33,21 @@ class WizardAccessTests(TestCase):
         response = self.client.get(WIZARD_URL)
         self.assertEqual(response.status_code, 200)
 
+    def test_client_step_has_live_search_input(self):
+        admin = make_admin_user()
+        self.client.force_login(admin)
+        response = self.client.get(WIZARD_URL)
+        self.assertContains(response, 'id="client-search-input"')
 
-class AdminCreatesDocumentTests(TestCase):
+
+class AdminCreatesDocumentTests(TempMediaTestCase):
     """Admin and Notary share the document-creation wizard; an Admin has no NotaryProfile
     of their own, so one is lazily provisioned to stand in as the document's signer."""
 
     def setUp(self):
         self.admin = make_admin_user()
         self.template = make_template(party_type=DocumentTemplate.PartyType.ONE, requires_witnesses=False)
-        self.solo_client = make_client_profile('adminwizardclient', first='Amina', last='Yusuf')
+        self.solo_client = make_client_profile('adminwizardclient', first='Amina', last='Yusuf', with_signature=True)
         self.client.force_login(self.admin)
 
     def test_admin_completes_wizard_and_is_provisioned_a_notary_profile(self):
@@ -54,7 +61,30 @@ class AdminCreatesDocumentTests(TestCase):
         self.assertEqual(doc.notary, notary_profile)
 
 
-class TwoPartyNoWitnessWizardTests(TestCase):
+class RequiredClientFieldsValidationTests(TempMediaTestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('reqfieldsnotary')
+        self.template = make_template(party_type=DocumentTemplate.PartyType.TWO, created_by=self.notary)
+        self.client.force_login(self.notary.user)
+
+    def test_blocks_client_step_when_signature_and_phone_missing(self):
+        incomplete = make_client_profile('incompleteclient', first='Cabdi', last='Xasan', phone='', with_signature=False)
+        response = post_step(self.client, 'client', {'client-client': incomplete.pk})
+        self.assertEqual(response.context['wizard']['steps'].current, 'client')
+        self.assertContains(response, 'Cabdi Xasan: phone missing, signature missing')
+
+    def test_blocks_party2_step_when_signature_missing(self):
+        complete = make_client_profile('completepartyone', with_signature=True)
+        incomplete2 = make_client_profile('incompleteparty2', first='Hodan', last='Maxamed', with_signature=False)
+
+        post_step(self.client, 'client', {'client-client': complete.pk})
+        post_step(self.client, 'template', {'template-template': self.template.pk})
+        response = post_step(self.client, 'party2', {'party2-client2': incomplete2.pk})
+        self.assertEqual(response.context['wizard']['steps'].current, 'party2')
+        self.assertContains(response, 'Hodan Maxamed: signature missing')
+
+
+class TwoPartyNoWitnessWizardTests(TempMediaTestCase):
     """Lease-style template: party2 step required, witnesses step skipped."""
 
     def setUp(self):
@@ -63,8 +93,8 @@ class TwoPartyNoWitnessWizardTests(TestCase):
             title='Heshiiska Kirada', party_type=DocumentTemplate.PartyType.TWO, requires_witnesses=False,
             created_by=self.notary,
         )
-        self.client1 = make_client_profile('leaseclient1', first='Amina', last='Yusuf')
-        self.client2 = make_client_profile('leaseclient2', first='Hodan', last='Maxamed')
+        self.client1 = make_client_profile('leaseclient1', first='Amina', last='Yusuf', with_signature=True)
+        self.client2 = make_client_profile('leaseclient2', first='Hodan', last='Maxamed', with_signature=True)
         self.client.force_login(self.notary.user)
 
     def test_full_flow_skips_witnesses_and_creates_document(self):
@@ -103,7 +133,7 @@ class TwoPartyNoWitnessWizardTests(TestCase):
         self.assertEqual(self.template.times_used, 1)
 
 
-class OnePartyWithWitnessWizardTests(TestCase):
+class OnePartyWithWitnessWizardTests(TempMediaTestCase):
     """Will-style template: party2 step skipped, witnesses step required."""
 
     def setUp(self):
@@ -112,7 +142,7 @@ class OnePartyWithWitnessWizardTests(TestCase):
             title='Dardaaran Qoyseed', party_type=DocumentTemplate.PartyType.ONE, requires_witnesses=True,
             created_by=self.notary,
         )
-        self.solo_client = make_client_profile('willclient', first='Faadumo', last='Aadan')
+        self.solo_client = make_client_profile('willclient', first='Faadumo', last='Aadan', with_signature=True)
         self.client.force_login(self.notary.user)
 
     def test_full_flow_skips_party2_and_records_witnesses(self):

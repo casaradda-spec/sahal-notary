@@ -7,6 +7,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 
 class ClientProfile(models.Model):
@@ -25,12 +26,28 @@ class ClientProfile(models.Model):
     def doc_count(self):
         return self.documents.count() + self.documents_as_party2.count()
 
+    REQUIRED_FIELDS = ['full_name', 'phone', 'national_id', 'address', 'signature']
+
+    def missing_required_fields(self):
+        """Field names from REQUIRED_FIELDS that are empty on this profile — used to block
+        document creation/editing until the client's record is complete."""
+        missing = []
+        if not self.user.get_full_name().strip():
+            missing.append('full_name')
+        for field in ('phone', 'national_id', 'address'):
+            if not getattr(self, field):
+                missing.append(field)
+        if not self.signature:
+            missing.append('signature')
+        return missing
+
 
 class NotaryProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notary_profile')
     license_number = models.CharField('Lambarka Ruqsadda', max_length=40, blank=True)
     region = models.CharField('Gobolka', max_length=80, blank=True)
     phone = models.CharField('Telefoonka', max_length=30, blank=True)
+    signature = models.ImageField('Saxiixa', upload_to='notary_signatures/', blank=True, null=True)
     seal_image = models.ImageField('Sawirka Shaambooyinka', upload_to='seals/', blank=True, null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0)
     bio = models.TextField(blank=True)
@@ -42,8 +59,8 @@ class NotaryProfile(models.Model):
 
 class DocumentTemplate(models.Model):
     class PartyType(models.TextChoices):
-        ONE = 'ONE', 'Hal dhinac'
-        TWO = 'TWO', 'Laba dhinac'
+        ONE = 'ONE', _('One Party')
+        TWO = 'TWO', _('Two Parties')
 
     title = models.CharField('Cinwaanka Qaabka', max_length=150)
     category = models.CharField('Nooca', max_length=80)
@@ -51,9 +68,11 @@ class DocumentTemplate(models.Model):
     requires_witnesses = models.BooleanField('U baahan yahay marqaatiyaal', default=False)
     body = models.TextField(
         'Qoraalka',
-        help_text='Isticmaal {{client_name}}, {{client2_name}}, {{date}}, {{city}}, {{notary_name}}, '
-        '{{notary_license}}, {{ref}} si loo buuxiyo si toos ah. Isticmaal {{client_signature}} '
-        '(ama {{client1_signature}} / {{client2_signature}}) si loo geliyo saxiixa macmiilka.',
+        help_text=_(
+            'Use {{client_name}}, {{client2_name}}, {{date}}, {{city}}, {{notary_name}}, '
+            '{{notary_license}}, {{ref}} to fill these in automatically. Use {{client_signature}} '
+            '(or {{client1_signature}} / {{client2_signature}}) to insert the client\'s signature.'
+        ),
     )
     created_by = models.ForeignKey(
         NotaryProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='templates'
@@ -63,7 +82,7 @@ class DocumentTemplate(models.Model):
 
     @property
     def party_label(self):
-        return 'Laba Dhinac' if self.party_type == self.PartyType.TWO else 'Hal Dhinac'
+        return _('Two Parties') if self.party_type == self.PartyType.TWO else _('One Party')
 
     def __str__(self):
         return self.title
@@ -79,19 +98,19 @@ def _signature_html(client_profile):
     if client_profile is None:
         return ''
     if not client_profile.signature:
-        return format_html('<span class="sig-missing">Saxiix lama helin</span>')
+        return format_html('<span class="sig-missing">{}</span>', _('No signature on file'))
     return format_html(
-        '<img src="{}" alt="Saxiixa {}" style="max-height:60px; height:auto; width:auto;">',
+        '<img src="{}" alt="{}" style="max-height:60px; height:auto; width:auto;">',
         client_profile.signature.url,
-        client_profile.user.get_full_name(),
+        _('Signature of %(name)s') % {'name': client_profile.user.get_full_name()},
     )
 
 
 class Document(models.Model):
     class Status(models.TextChoices):
-        PENDING = 'PENDING', 'Sugaya'
-        SIGNED = 'SIGNED', 'La saxiixay'
-        COMPLETED = 'COMPLETED', 'Dhammaystiran'
+        PENDING = 'PENDING', _('Pending')
+        SIGNED = 'SIGNED', _('Signed')
+        COMPLETED = 'COMPLETED', _('Completed')
 
     ref = models.CharField(max_length=20, unique=True, editable=False)
     template = models.ForeignKey(DocumentTemplate, on_delete=models.PROTECT, related_name='documents')

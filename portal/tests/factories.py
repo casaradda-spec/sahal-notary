@@ -19,12 +19,16 @@ def tiny_png_data_url():
     return f'data:image/png;base64,{TINY_PNG_BASE64}'
 
 
-def make_client_profile(username, first='Test', last='Client', password='123', city='Muqdisho', with_signature=False):
+def make_client_profile(username, first='Test', last='Client', password='123', city='Muqdisho',
+                         phone='0610000000', national_id='SOM-TEST-001', address='Test Address',
+                         with_signature=False):
     user = User.objects.create_user(
         username=username, password=password, first_name=first, last_name=last,
         role=AccountsUser.Role.CLIENT, must_change_password=False,
     )
-    profile = ClientProfile.objects.create(user=user, city=city)
+    profile = ClientProfile.objects.create(
+        user=user, city=city, phone=phone, national_id=national_id, address=address,
+    )
     if with_signature:
         from django.core.files.base import ContentFile
         profile.signature.save('signature.png', ContentFile(tiny_png_bytes()), save=True)

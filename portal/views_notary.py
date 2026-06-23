@@ -8,9 +8,9 @@ from django.utils import timezone
 from accounts.decorators import role_required
 from accounts.models import User
 
-from .forms import DocumentTemplateForm, NotaryProfileForm
+from .forms import DocumentEditForm, DocumentTemplateForm, NotaryProfileForm
 from .models import AuditLog, Document, DocumentTemplate
-from .utils import get_or_create_notary_profile, render_pdf, render_pdf_bytes, role_base_template
+from .utils import get_or_create_notary_profile, pdf_context, render_pdf, render_pdf_bytes, role_base_template
 
 
 @role_required(User.Role.NOTARY)
@@ -129,8 +129,8 @@ def create_success(request, ref):
 
 @role_required(User.Role.NOTARY, User.Role.ADMIN)
 def document_pdf(request, ref):
-    document = get_object_or_404(Document, ref=ref)
-    return render_pdf('portal/pdf/document.html', {'document': document}, f'{document.ref}.pdf')
+    document = get_object_or_404(Document.objects.select_related('notary'), ref=ref)
+    return render_pdf('portal/pdf/document.html', pdf_context(request, document), f'{document.ref}.pdf')
 
 
 @role_required(User.Role.NOTARY, User.Role.ADMIN)
@@ -143,6 +143,32 @@ def document_detail(request, ref):
         request,
         'portal/notary/document_detail.html',
         {'document': document, 'active_nav': 'documents', 'base_template': role_base_template(request.user)},
+    )
+
+
+@role_required(User.Role.NOTARY, User.Role.ADMIN)
+def document_edit(request, ref):
+    document = get_object_or_404(
+        Document.objects.select_related('client__user', 'client2__user', 'template', 'notary__user'),
+        ref=ref, status=Document.Status.PENDING,
+    )
+    form = DocumentEditForm(
+        request.POST or None,
+        initial={'template': document.template, 'client': document.client, 'client2': document.client2},
+    )
+    if request.method == 'POST' and form.is_valid():
+        document.template = form.cleaned_data['template']
+        document.client = form.cleaned_data['client']
+        document.client2 = form.cleaned_data['client2']
+        document.finalize()
+        document.pdf_hash = ''
+        document.save()
+        messages.success(request, f'Dokumeentiga {document.ref} waa la cusbooneysiiyay.')
+        return redirect('notary_document_detail', ref=document.ref)
+    return render(
+        request,
+        'portal/notary/document_edit.html',
+        {'form': form, 'document': document, 'active_nav': 'documents', 'base_template': role_base_template(request.user)},
     )
 
 
@@ -170,7 +196,7 @@ def document_complete(request, ref):
     document.status = Document.Status.SIGNED
     document.save(update_fields=['status'])
 
-    pdf_bytes = render_pdf_bytes('portal/pdf/document.html', {'document': document})
+    pdf_bytes = render_pdf_bytes('portal/pdf/document.html', pdf_context(request, document))
     document.pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
     document.status = Document.Status.COMPLETED
     document.signed_at = timezone.now()

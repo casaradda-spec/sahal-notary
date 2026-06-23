@@ -1,92 +1,125 @@
 {% extends base_template %}
-{% load static %}
-{% block title %}Macaamiisha — Sahal Notary System{% endblock %}
+{% load static i18n icons %}
+{% block title %}{% trans "Clients" %} — {% trans "Sahal Notary System" %}{% endblock %}
 {% block content %}
-<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px;">
   <div>
-    <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 5px;">Macaamiisha</h1>
-    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{{ clients|length }} macmiil oo diiwaangashan</p>
+    <h1 style="font-size:28px; font-weight:800; letter-spacing:var(--tracking-tight); color:var(--text-strong); margin:0 0 5px;">{% trans "Clients" %}</h1>
+    <p style="font-size:14.5px; color:var(--text-muted); margin:0;">{% blocktrans count counter=clients|length %}{{ counter }} registered client{% plural %}{{ counter }} registered clients{% endblocktrans %}</p>
   </div>
   <div style="display:flex; gap:10px;">
-    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">Liiska</a>
-    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">+ Diiwaangeli Cusub</a>
+    <a href="?tab=list" class="chip {% if tab == 'list' %}chip-active{% endif %}">{% icon "rectangle-stack" size=15 %}{% trans "List" %}</a>
+    <a href="?tab=add" class="chip {% if tab == 'add' %}chip-active{% endif %}">{% icon "plus" size=15 %}{% trans "Add New" %}</a>
   </div>
 </div>
 
 {% if tab == 'add' %}
 <form method="post" class="card" style="padding:36px; max-width:620px; display:flex; flex-direction:column; gap:18px;" id="add-client-form">
   {% csrf_token %}
-  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px;">Diiwaangeli Macmiil Cusub</h2>
-  <div class="input-field"><label>{{ form.full_name.label }}</label>{{ form.full_name }}</div>
+  <h2 style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong); margin:0 0 6px; display:flex; align-items:center; gap:10px;">{% icon "user-circle" size=22 css_class="icon-brand" %}{% trans "Register New Client" %}</h2>
+  <div class="input-field {% if form.full_name.errors %}has-error{% endif %}">
+    <label>{{ form.full_name.label }}</label>
+    {{ form.full_name }}
+    {% for error in form.full_name.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+  </div>
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
-    <div class="input-field"><label>{{ form.phone.label }}</label>{{ form.phone }}</div>
+    <div class="input-field {% if form.phone.errors %}has-error{% endif %}">
+      <label>{{ form.phone.label }}</label>
+      {{ form.phone }}
+      {% for error in form.phone.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
     <div class="input-field"><label>{{ form.email.label }}</label>{{ form.email }}</div>
   </div>
-  <div class="input-field"><label>{{ form.national_id.label }}</label>{{ form.national_id }}</div>
+  <div class="input-field {% if form.national_id.errors %}has-error{% endif %}">
+    <label>{{ form.national_id.label }}</label>
+    {{ form.national_id }}
+    {% for error in form.national_id.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+  </div>
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
     <div class="input-field"><label>{{ form.city.label }}</label>{{ form.city }}</div>
     <div class="input-field"><label>{{ form.address.label }}</label>{{ form.address }}</div>
   </div>
   <div>
-    <div style="font-size:13.5px; font-weight:600; color:var(--text-strong); margin-bottom:7px;">Saxiixa Macmiilka</div>
-    <canvas id="add-client-signature-canvas" class="signature-pad-canvas" width="480" height="150" style="width:100%; max-width:480px; height:150px;"></canvas>
+    <div style="font-size:13.5px; font-weight:600; color:var(--text-strong); margin-bottom:7px; display:flex; align-items:center; gap:7px;">{% icon "signature" size=16 %}{% trans "Client's Signature" %}</div>
+    <div class="signature-pad-wrap">
+      <canvas id="add-client-signature-canvas" class="signature-pad-canvas" width="480" height="150" style="width:100%; max-width:480px; height:150px;"></canvas>
+    </div>
     <div style="margin-top:8px;">
-      <button type="button" id="add-client-signature-clear" class="btn" style="height:34px; padding:0 14px; font-size:12.5px;">Tirtir</button>
+      <button type="button" id="add-client-signature-clear" class="btn btn-ghost btn-sm">{% icon "trash" size=14 %}{% trans "Clear" %}</button>
     </div>
     <input type="hidden" name="signature_data" id="add-client-signature-data">
   </div>
-  <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 16px; font-size:12.5px; color:var(--text-muted);">
-    Username-ka iyo furaha hore ee "123" ayaa si toos ah loo abuuri doonaa. Macmiilku wuxuu bedeli doonaa furaha markuu uga soo galo.
+  <div class="alert alert-info">
+    {% icon "exclamation-triangle" size=16 %}
+    <span>{% trans 'A username and temporary password ("123") will be created automatically. The client will be asked to change the password the first time they log in.' %}</span>
   </div>
   <div style="display:flex; gap:12px;">
-    <a href="?tab=list" class="btn">Jooji</a>
-    <button type="submit" class="btn" style="flex:1; background:linear-gradient(135deg,var(--teal-500),var(--purple-600)); color:#fff; border:none;">Diiwaangeli Macmiilka</button>
+    <a href="?tab=list" class="btn btn-secondary">{% trans "Cancel" %}</a>
+    <button type="submit" class="btn btn-primary" style="flex:1;">{% icon "check" size=16 %}{% trans "Register Client" %}</button>
   </div>
 </form>
 <script src="{% static 'portal/js/signature_pad.js' %}"></script>
 <script>initSignaturePad('add-client-signature-canvas', 'add-client-signature-data', 'add-client-signature-clear');</script>
 
 {% else %}
-<div class="card" style="overflow:hidden;">
+<div class="search-field input-field" style="max-width:340px; margin-bottom:16px;">
+  {% icon "magnifying-glass" size=18 %}
+  <input type="search" id="clients-search-input" placeholder="{% trans 'Search clients (name or phone)...' %}" autocomplete="off">
+</div>
+<div class="card table-card table-scroll">
   <table>
-    <thead><tr style="background:var(--surface-sunken);">
-      <th style="padding:11px 24px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MACMIILKA</th>
-      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">TELEFOON</th>
-      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">MAGAALO</th>
-      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">USERNAME</th>
-      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:center; color:var(--text-muted);">DOCS</th>
-      <th style="padding:11px 16px; font-size:11.5px; font-weight:700; text-align:left; color:var(--text-muted);">SAXIIX</th>
-      <th style="padding:11px 24px 11px 16px; font-size:11.5px; font-weight:700; text-align:right; color:var(--text-muted);">FICIL</th>
+    <thead><tr>
+      <th>{% trans "CLIENT" %}</th>
+      <th>{% trans "PHONE" %}</th>
+      <th>{% trans "CITY" %}</th>
+      <th>{% trans "USERNAME" %}</th>
+      <th class="align-center">{% trans "DOCS" %}</th>
+      <th>{% trans "SIGNATURE" %}</th>
+      <th class="align-right">{% trans "ACTION" %}</th>
     </tr></thead>
-    <tbody>
+    <tbody id="clients-table-body">
       {% for cl in clients %}
-      <tr class="tbl-row" style="border-top:1px solid var(--border-subtle);">
-        <td style="padding:14px 24px;">
+      <tr data-search="{{ cl.user.get_full_name|lower }} {{ cl.phone }}">
+        <td>
           <div style="display:flex; align-items:center; gap:12px;">
             <span class="avatar">{{ cl.user.first_name|slice:":1" }}{{ cl.user.last_name|slice:":1" }}</span>
-            <div><div style="font-family:var(--font-display); font-size:14px; font-weight:600; color:var(--text-strong);">{{ cl.user.get_full_name }}</div><div style="font-size:12px; color:var(--text-muted);">{{ cl.user.email }}</div></div>
+            <div><div class="cell-strong">{{ cl.user.get_full_name }}</div><div class="cell-muted" style="font-size:12px;">{{ cl.user.email }}</div></div>
           </div>
         </td>
-        <td style="padding:14px 16px; font-size:13.5px; color:var(--text-body);">{{ cl.phone }}</td>
-        <td style="padding:14px 16px; font-size:13.5px; color:var(--text-body);">{{ cl.city }}</td>
-        <td style="padding:14px 16px; font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);">{{ cl.user.username }}</td>
-        <td style="padding:14px 16px; text-align:center; font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ cl.doc_count }}</td>
-        <td style="padding:14px 16px;">
+        <td>{{ cl.phone }}</td>
+        <td>{{ cl.city }}</td>
+        <td class="cell-mono cell-muted" style="font-size:12.5px;">{{ cl.user.username }}</td>
+        <td class="align-center cell-strong">{{ cl.doc_count }}</td>
+        <td>
           {% if cl.signature %}
-          <img src="{{ cl.signature.url }}" alt="Saxiixa {{ cl.user.get_full_name }}" style="max-height:28px; height:auto; width:auto; max-width:90px;">
+          <img src="{{ cl.signature.url }}" alt="{% blocktrans with full_name=cl.user.get_full_name %}Signature of {{ full_name }}{% endblocktrans %}" style="max-height:28px; height:auto; width:auto; max-width:90px;">
           {% else %}
-          <span class="sig-missing"><span class="pill-dot" style="background:#9A6206;"></span>Lama heli</span>
+          <span class="sig-missing">{% icon "exclamation-triangle" size=12 %}{% trans "Missing" %}</span>
           {% endif %}
         </td>
-        <td style="padding:14px 24px 14px 16px; text-align:right;">
-          <a href="{% url 'admin_client_signature' cl.pk %}" class="btn" style="height:32px; padding:0 14px; font-size:12.5px;">Saxiix</a>
+        <td class="align-right">
+          <div class="row-actions">
+            <a href="{% url 'admin_client_edit' cl.pk %}" class="row-action-btn" title="{% trans 'Edit' %}" aria-label="{% trans 'Edit' %}">{% icon "pencil-square" size=16 %}</a>
+            <a href="{% url 'admin_client_signature' cl.pk %}" class="row-action-btn" title="{% trans 'Signature' %}" aria-label="{% trans 'Signature' %}">{% icon "signature" size=16 %}</a>
+            <form method="post" action="{% url 'admin_client_delete' cl.pk %}" style="margin:0; display:inline;" onsubmit="return confirm('{% blocktrans with full_name=cl.user.get_full_name|escapejs %}Are you sure you want to delete {{ full_name }}?{% endblocktrans %}');">
+              {% csrf_token %}
+              <button type="submit" class="row-action-btn row-action-danger" title="{% trans 'Delete' %}" aria-label="{% trans 'Delete' %}">{% icon "trash" size=16 %}</button>
+            </form>
+          </div>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan macaamiil.</td></tr>
+      <tr><td colspan="7">
+        <div class="empty-state">
+          {% icon "users" size=36 %}
+          <div class="empty-state-title">{% trans "No clients yet." %}</div>
+        </div>
+      </td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+<script src="{% static 'portal/js/live_filter.js' %}"></script>
+<script>initLiveFilter('clients-search-input', 'tr', '#clients-table-body');</script>
 {% endif %}
 {% endblock %}

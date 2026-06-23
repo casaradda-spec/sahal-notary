@@ -26,12 +26,17 @@ urlpatterns = [
     path('notary/documents/', views_notary.all_documents, name='notary_documents'),
     path('notary/documents/<str:ref>/pdf/', views_notary.document_pdf, name='notary_document_pdf'),
     path('notary/documents/<str:ref>/complete/', views_notary.document_complete, name='notary_document_complete'),
+    path('notary/documents/<str:ref>/edit/', views_notary.document_edit, name='notary_document_edit'),
     path('notary/documents/<str:ref>/', views_notary.document_detail, name='notary_document_detail'),
     path('notary/profile/', views_notary.profile, name='notary_profile'),
 
     path('admin-panel/clients/', views_admin.clients_view, name='admin_clients'),
+    path('admin-panel/clients/<int:pk>/edit/', views_admin.client_edit, name='admin_client_edit'),
+    path('admin-panel/clients/<int:pk>/delete/', views_admin.client_delete, name='admin_client_delete'),
     path('admin-panel/clients/<int:pk>/signature/', views_admin.client_signature, name='admin_client_signature'),
     path('admin-panel/notaries/', views_admin.notaries_view, name='admin_notaries'),
+    path('admin-panel/notaries/<int:pk>/edit/', views_admin.notary_edit, name='admin_notary_edit'),
+    path('admin-panel/notaries/<int:pk>/delete/', views_admin.notary_delete, name='admin_notary_delete'),
     path('admin-panel/reports/', views_admin.reports, name='admin_reports'),
 
     path('verify/<uuid:qr_token>/', views_public.verify, name='verify'),

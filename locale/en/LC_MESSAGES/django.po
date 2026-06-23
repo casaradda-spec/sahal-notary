@@ -1,0 +1,606 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Language: LC_MESSAGES\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Log Out"
+msgstr "Log Out"
+
+msgid "Clients"
+msgstr "Clients"
+
+msgid "Templates"
+msgstr "Templates"
+
+msgid "Create Document"
+msgstr "Create Document"
+
+msgid "All Documents"
+msgstr "All Documents"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Notary System"
+msgstr "Notary System"
+
+msgid "Notary"
+msgstr "Notary"
+
+msgid "Admin Panel"
+msgstr "Admin Panel"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "Notaries"
+msgstr "Notaries"
+
+msgid "Reports"
+msgstr "Reports"
+
+msgid "List"
+msgstr "List"
+
+msgid "Add New"
+msgstr "Add New"
+
+msgid "Register New Client"
+msgstr "Register New Client"
+
+msgid "Client's Signature"
+msgstr "Client's Signature"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid ""
+"A username and temporary password (\"123\") will be created automatically. "
+"The client will be asked to change the password the first time they log in."
+msgstr ""
+"A username and temporary password (\"123\") will be created automatically. "
+"The client will be asked to change the password the first time they log in."
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Register Client"
+msgstr "Register Client"
+
+msgid "Search clients (name or phone)..."
+msgstr "Search clients (name or phone)..."
+
+msgid "CLIENT"
+msgstr "CLIENT"
+
+msgid "PHONE"
+msgstr "PHONE"
+
+msgid "CITY"
+msgstr "CITY"
+
+msgid "USERNAME"
+msgstr "USERNAME"
+
+msgid "DOCS"
+msgstr "DOCS"
+
+msgid "SIGNATURE"
+msgstr "SIGNATURE"
+
+msgid "ACTION"
+msgstr "ACTION"
+
+msgid "Missing"
+msgstr "Missing"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "No clients yet."
+msgstr "No clients yet."
+
+msgid "Edit Client"
+msgstr "Edit Client"
+
+msgid "Current signature"
+msgstr "Current signature"
+
+msgid "If you don't draw a new signature, the existing one will be kept."
+msgstr "If you don't draw a new signature, the existing one will be kept."
+
+msgid "Save Changes"
+msgstr "Save Changes"
+
+msgid "Draw a new signature below if you want to replace the current one."
+msgstr "Draw a new signature below if you want to replace the current one."
+
+msgid "Current Signature"
+msgstr "Current Signature"
+
+msgid "New Signature"
+msgstr "New Signature"
+
+msgid "Save Signature"
+msgstr "Save Signature"
+
+msgid "Add Notary"
+msgstr "Add Notary"
+
+msgid "Add New Notary"
+msgstr "Add New Notary"
+
+msgid "Notary's Signature"
+msgstr "Notary's Signature"
+
+msgid "A username and temporary password (\"123\") will be created automatically."
+msgstr ""
+"A username and temporary password (\"123\") will be created automatically."
+
+msgid "documents"
+msgstr "documents"
+
+msgid "rating"
+msgstr "rating"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "No notaries yet."
+msgstr "No notaries yet."
+
+msgid "Edit Notary"
+msgstr "Edit Notary"
+
+msgid "Current stamp"
+msgstr "Current stamp"
+
+msgid "If you don't upload a new image, the current stamp will be kept."
+msgstr "If you don't upload a new image, the current stamp will be kept."
+
+msgid "Total Documents"
+msgstr "Total Documents"
+
+msgid "Notary Activity"
+msgstr "Notary Activity"
+
+msgid "No data yet."
+msgstr "No data yet."
+
+msgid "Recent Activity"
+msgstr "Recent Activity"
+
+msgid "No activity yet."
+msgstr "No activity yet."
+
+msgid "Sign In"
+msgstr "Sign In"
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "Enter your username and password to continue."
+msgstr "Enter your username and password to continue."
+
+msgid "YOUR SECURITY MATTERS"
+msgstr "YOUR SECURITY MATTERS"
+
+msgid "Remember me"
+msgstr "Remember me"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Change Your Password"
+msgstr "Change Your Password"
+
+msgid ""
+"This is your first time signing in. Please change the temporary password "
+"<span style=\"font-family:var(--font-mono); background:var(--surface-"
+"sunken); padding:1px 7px; border-radius:6px; color:var(--text-strong); font-"
+"weight:600;\">123</span> to a new one."
+msgstr ""
+"This is your first time signing in. Please change the temporary password "
+"<span style=\"font-family:var(--font-mono); background:var(--surface-"
+"sunken); padding:1px 7px; border-radius:6px; color:var(--text-strong); font-"
+"weight:600;\">123</span> to a new one."
+
+msgid "Enter your new password."
+msgstr "Enter your new password."
+
+msgid "New Password"
+msgstr "New Password"
+
+msgid "Confirm New Password"
+msgstr "Confirm New Password"
+
+msgid "Your password is kept private and is never shared with anyone."
+msgstr "Your password is kept private and is never shared with anyone."
+
+msgid "Save and Continue"
+msgstr "Save and Continue"
+
+msgid "Full Name"
+msgstr "Full Name"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "National ID"
+msgstr "National ID"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "City"
+msgstr "City"
+
+msgid "License Number"
+msgstr "License Number"
+
+msgid "Region"
+msgstr "Region"
+
+msgid "Signature"
+msgstr "Signature"
+
+msgid "Stamp Image"
+msgstr "Stamp Image"
+
+msgid "Template Title"
+msgstr "Template Title"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Parties"
+msgstr "Parties"
+
+msgid "Requires witnesses"
+msgstr "Requires witnesses"
+
+msgid "Body Text"
+msgstr "Body Text"
+
+msgid "Bio"
+msgstr "Bio"
+
+msgid "%(count)s documents"
+msgstr "%(count)s documents"
+
+msgid "Witness Name"
+msgstr "Witness Name"
+
+msgid "Template"
+msgstr "Template"
+
+msgid "Party 1"
+msgstr "Party 1"
+
+msgid "Party 2"
+msgstr "Party 2"
+
+msgid "No signature on file"
+msgstr "No signature on file"
+
+msgid "Signature of %(name)s"
+msgstr "Signature of %(name)s"
+
+msgid "One Party"
+msgstr "One Party"
+
+msgid "Two Parties"
+msgstr "Two Parties"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "Signed"
+msgstr "Signed"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "My Documents"
+msgstr "My Documents"
+
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "total documents"
+msgstr "total documents"
+
+msgid "No documents yet"
+msgstr "No documents yet"
+
+msgid "When a notary prepares a document for you, it will appear here."
+msgstr "When a notary prepares a document for you, it will appear here."
+
+msgid "All"
+msgstr "All"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "documents created"
+msgstr "documents created"
+
+msgid "signatures completed"
+msgstr "signatures completed"
+
+msgid "signatures awaited"
+msgstr "signatures awaited"
+
+msgid "PDFs issued"
+msgstr "PDFs issued"
+
+msgid "See All"
+msgstr "See All"
+
+msgid "REFERENCE"
+msgstr "REFERENCE"
+
+msgid "TITLE"
+msgstr "TITLE"
+
+msgid "STATUS"
+msgstr "STATUS"
+
+msgid "DATE"
+msgstr "DATE"
+
+msgid "No documents yet."
+msgstr "No documents yet."
+
+msgid "New Template"
+msgstr "New Template"
+
+msgid "Are you sure you want to delete this template?"
+msgstr "Are you sure you want to delete this template?"
+
+msgid "No templates yet. Create one to get started."
+msgstr "No templates yet. Create one to get started."
+
+msgid "Edit Template"
+msgstr "Edit Template"
+
+msgid "Write the template text and save it."
+msgstr "Write the template text and save it."
+
+msgid "Save Template"
+msgstr "Save Template"
+
+msgid ""
+"Use {{client_name}}, {{client2_name}}, {{date}}, {{city}}, {{notary_name}}, "
+"{{notary_license}}, {{ref}} to fill these in automatically. Use "
+"{{client_signature}} (or {{client1_signature}} / {{client2_signature}}) to "
+"insert the client's signature."
+msgstr ""
+"Use {{client_name}}, {{client2_name}}, {{date}}, {{city}}, {{notary_name}}, "
+"{{notary_license}}, {{ref}} to fill these in automatically. Use "
+"{{client_signature}} (or {{client1_signature}} / {{client2_signature}}) to "
+"insert the client's signature."
+
+msgid "DOCUMENT TITLE"
+msgstr "DOCUMENT TITLE"
+
+msgid "NOTARY"
+msgstr "NOTARY"
+
+msgid "TYPE"
+msgstr "TYPE"
+
+msgid "View"
+msgstr "View"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Witnesses"
+msgstr "Witnesses"
+
+msgid "PDF SHA-256"
+msgstr "PDF SHA-256"
+
+msgid "Needed before this can be completed:"
+msgstr "Needed before this can be completed:"
+
+msgid "Download PDF"
+msgstr "Download PDF"
+
+msgid "Complete & Sign"
+msgstr "Complete & Sign"
+
+msgid "Back to Documents"
+msgstr "Back to Documents"
+
+msgid "Edit Document"
+msgstr "Edit Document"
+
+msgid "two-party templates only"
+msgstr "two-party templates only"
+
+msgid "Save & Regenerate"
+msgstr "Save & Regenerate"
+
+msgid "Verified Notary"
+msgstr "Verified Notary"
+
+msgid "Stamp"
+msgstr "Stamp"
+
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+msgid "Document Created"
+msgstr "Document Created"
+
+msgid "Document created!"
+msgstr "Document created!"
+
+msgid ""
+"The PDF with the digital signature and official stamp is ready. The client "
+"will see it in their account."
+msgstr ""
+"The PDF with the digital signature and official stamp is ready. The client "
+"will see it in their account."
+
+msgid "Document Details"
+msgstr "Document Details"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Client"
+msgstr "Client"
+
+msgid "Reference"
+msgstr "Reference"
+
+msgid "Verification QR Code"
+msgstr "Verification QR Code"
+
+msgid "The client can scan this to verify the document."
+msgstr "The client can scan this to verify the document."
+
+msgid "Choose the Client"
+msgstr "Choose the Client"
+
+msgid "Choose the client for this agreement."
+msgstr "Choose the client for this agreement."
+
+msgid "No registered clients yet."
+msgstr "No registered clients yet."
+
+msgid "Choose the Document Template"
+msgstr "Choose the Document Template"
+
+msgid "No templates yet."
+msgstr "No templates yet."
+
+msgid "Create one"
+msgstr "Create one"
+
+msgid "Choose the Second Party"
+msgstr "Choose the Second Party"
+
+msgid "This template is a two-party agreement — choose the second client."
+msgstr "This template is a two-party agreement — choose the second client."
+
+msgid "Enter the witnesses' names and phone numbers (optional, up to six)."
+msgstr "Enter the witnesses' names and phone numbers (optional, up to six)."
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Review the Document"
+msgstr "Review the Document"
+
+msgid "Check the details below before confirming."
+msgstr "Check the details below before confirming."
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Confirm & Create"
+msgstr "Confirm & Create"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Verify Document"
+msgstr "Verify Document"
+
+msgid "This document is"
+msgstr "This document is"
+
+msgid "VERIFIED"
+msgstr "VERIFIED"
+
+msgid "Verified"
+msgstr "Verified"
+
+msgid "Original Document"
+msgstr "Original Document"
+
+msgid "Cannot be altered"
+msgstr "Cannot be altered"
+
+msgid "Official Verification"
+msgstr "Official Verification"
+
+msgid "This code cannot be verified"
+msgstr "This code cannot be verified"
+
+msgid "This document could not be found, or the QR code is invalid."
+msgstr "This document could not be found, or the QR code is invalid."
+
+msgid "Signature of %(full_name)s"
+msgstr "Signature of %(full_name)s"
+
+msgid "Are you sure you want to delete %(full_name)s?"
+msgstr "Are you sure you want to delete %(full_name)s?"
+
+msgid "Edit %(full_name)s"
+msgstr "Edit %(full_name)s"
+
+msgid "Signature — %(full_name)s"
+msgstr "Signature — %(full_name)s"
+
+msgid "Good morning, %(first_name)s 👋"
+msgstr "Good morning, %(first_name)s 👋"
+
+msgid "Edit %(ref)s"
+msgstr "Edit %(ref)s"
+
+msgid "Selected client: <strong>%(client)s</strong>"
+msgstr "Selected client: <strong>%(client)s</strong>"
+
+msgid "%(counter)s registered client"
+msgid_plural "%(counter)s registered clients"
+msgstr[0] "%(counter)s registered client"
+msgstr[1] "%(counter)s registered clients"
+
+msgid "%(counter)s active notary"
+msgid_plural "%(counter)s active notaries"
+msgstr[0] "%(counter)s active notary"
+msgstr[1] "%(counter)s active notaries"
+
+msgid "%(counter)s template available"
+msgid_plural "%(counter)s templates available"
+msgstr[0] "%(counter)s template available"
+msgstr[1] "%(counter)s templates available"
+
+msgid "Used %(counter)s time"
+msgid_plural "Used %(counter)s times"
+msgstr[0] "Used %(counter)s time"
+msgstr[1] "Used %(counter)s times"
+
+msgid "There is %(counter)s document waiting to be signed."
+msgid_plural "There are %(counter)s documents waiting to be signed."
+msgstr[0] "There is %(counter)s document waiting to be signed."
+msgstr[1] "There are %(counter)s documents waiting to be signed."

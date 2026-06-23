@@ -9,6 +9,7 @@ from django.contrib.staticfiles import finders
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.urls import reverse
 from xhtml2pdf import pisa
 
 from accounts.models import User as AccountsUser
@@ -85,6 +86,25 @@ def qr_png_response(data_url):
     img.save(buf, format='PNG')
     buf.seek(0)
     return buf
+
+
+def qr_data_uri(data_url):
+    """Render a QR code as a self-contained base64 data URI.
+
+    xhtml2pdf can't fetch our own dynamic /verify/.../qr.png view over HTTP from inside
+    the Django process, so the PNG is embedded directly rather than linked.
+    """
+    img = qrcode.make(data_url)
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    encoded = base64.b64encode(buf.getvalue()).decode('ascii')
+    return f'data:image/png;base64,{encoded}'
+
+
+def pdf_context(request, document):
+    """Context for the document PDF template, including a verification QR code."""
+    verify_url = request.build_absolute_uri(reverse('verify', args=[document.qr_token]))
+    return {'document': document, 'qr_data_uri': qr_data_uri(verify_url)}
 
 
 def render_pdf_bytes(template_name, context):

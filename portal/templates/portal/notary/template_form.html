@@ -1,9 +1,10 @@
 {% extends base_template %}
-{% block title %}{% if template %}Wax ka beddel Qaabka{% else %}Samee Qaab Cusub{% endif %} — Sahal Notary System{% endblock %}
+{% load i18n icons %}
+{% block title %}{% if template %}{% trans "Edit Template" %}{% else %}{% trans "New Template" %}{% endif %} — {% trans "Sahal Notary System" %}{% endblock %}
 {% block content %}
 <div style="max-width:680px;">
-  <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 6px;">{% if template %}Wax ka beddel Qaabka{% else %}Samee Qaab Cusub{% endif %}</h1>
-  <p style="font-size:14px; color:var(--text-muted); margin:0 0 24px;">Qor qoraalka qaabka oo kaydi.</p>
+  <h1 style="font-size:24px; font-weight:800; letter-spacing:var(--tracking-tight); color:var(--text-strong); margin:0 0 6px; display:flex; align-items:center; gap:10px;">{% icon "document-text" size=24 css_class="icon-brand" %}{% if template %}{% trans "Edit Template" %}{% else %}{% trans "New Template" %}{% endif %}</h1>
+  <p style="font-size:14px; color:var(--text-muted); margin:0 0 24px;">{% trans "Write the template text and save it." %}</p>
 
   <form method="post" class="card" style="padding:28px; display:flex; flex-direction:column; gap:18px;">
     {% csrf_token %}
@@ -28,11 +29,11 @@
     <div class="input-field">
       <label for="{{ form.body.id_for_label }}">{{ form.body.label }}</label>
       {{ form.body }}
-      <div style="font-size:12px; color:var(--text-muted);">{{ form.body.help_text }}</div>
+      <div class="field-hint">{{ form.body.help_text }}</div>
     </div>
     <div style="display:flex; gap:12px; margin-top:6px;">
-      <a href="{% url 'notary_templates' %}" class="btn">Jooji</a>
-      <button type="submit" class="btn btn-primary" style="flex:1;">{% if template %}Kaydi Isbeddelka{% else %}Kaydi Qaabka{% endif %}</button>
+      <a href="{% url 'notary_templates' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-primary" style="flex:1;">{% icon "check" size=16 %}{% if template %}{% trans "Save Changes" %}{% else %}{% trans "Save Template" %}{% endif %}</button>
     </div>
   </form>
 </div>

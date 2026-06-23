@@ -1,96 +1,149 @@
 {% extends base_template %}
-{% block title %}Samee Dokumeenti Cusub — Sahal Notary System{% endblock %}
+{% load static i18n icons %}
+{% block title %}{% trans "Create Document" %} — {% trans "Sahal Notary System" %}{% endblock %}
 {% block content %}
-<div style="max-width:780px;">
-<h1 style="font-size:26px; font-weight:800; letter-spacing:-0.02em; color:var(--text-strong); margin:0 0 28px;">Samee Dokumeenti Cusub</h1>
+<div class="wizard-shell">
+<h1 style="font-size:26px; font-weight:800; letter-spacing:var(--tracking-tight); color:var(--text-strong); margin:0 0 28px; display:flex; align-items:center; gap:10px;">{% icon "document-plus" size=24 css_class="icon-brand" %}{% trans "Create Document" %}</h1>
 
-<div style="display:flex; align-items:center; margin-bottom:38px;">
+<div style="display:flex; align-items:center; margin-bottom:32px;">
   {% for n, label in step_labels %}
-  <div style="display:flex; flex-direction:column; align-items:center; gap:6px; width:80px;">
-    <div style="width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px;
-      {% if step_bubble == n %}background:var(--gradient-brand); color:#fff;{% elif step_bubble > n %}background:var(--green-500); color:#fff;{% else %}background:var(--surface-sunken); color:var(--text-muted);{% endif %}">{{ n }}</div>
-    <span style="font-size:11px; font-weight:600; color:var(--text-muted); text-align:center;">{{ label }}</span>
+  <div style="display:flex; flex-direction:column; align-items:center; gap:8px; width:84px;">
+    <div class="step-bubble {% if step_bubble == n %}step-bubble-active{% elif step_bubble > n %}step-bubble-done{% else %}step-bubble-todo{% endif %}">{% if step_bubble > n %}{% icon "check" size=16 %}{% else %}{{ n }}{% endif %}</div>
+    <span class="step-label {% if step_bubble >= n %}step-label-active{% endif %}">{{ label }}</span>
   </div>
-  {% if not forloop.last %}<div style="flex:1; height:2px; background:{% if step_bubble > n %}var(--green-500){% else %}var(--border-subtle){% endif %};"></div>{% endif %}
+  {% if not forloop.last %}<div class="step-track {% if step_bubble > n %}step-track-done{% endif %}"></div>{% endif %}
   {% endfor %}
 </div>
 
+<div class="card wizard-card">
 <form method="post" novalidate>
   {% csrf_token %}
   {{ wizard.management_form }}
 
+  {% if wizard.form.errors and wizard.steps.current != 'witnesses' %}
+  <div class="alert alert-warning" style="margin-bottom:20px;">
+    {% icon "exclamation-triangle" size=16 %}
+    <div>
+    {% for field in wizard.form %}
+      {% for error in field.errors %}
+      <div>{{ error }}</div>
+      {% endfor %}
+    {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   {% if wizard.steps.current == 'client' %}
-    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Macmiilka</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Dooro macmiilka heshiiska.</p>
-    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+    <h2 class="wizard-section-title">{% trans "Choose the Client" %}</h2>
+    <p class="wizard-section-subtitle">{% trans "Choose the client for this agreement." %}</p>
+    <div class="search-field input-field" style="max-width:360px; margin-bottom:14px;">
+      {% icon "magnifying-glass" size=16 %}
+      <input type="search" id="client-search-input" placeholder="{% trans 'Search clients (name or phone)...' %}" autocomplete="off">
+    </div>
+    <div id="client-radio-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
       {% for radio in wizard.form.client %}
-      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+      {% with c=radio.data.value.instance %}
+      <label class="choice-card">
         {{ radio.tag }}
-        <span>{{ radio.choice_label }}</span>
+        <span class="avatar">{{ c.user.first_name|slice:":1" }}{{ c.user.last_name|slice:":1" }}</span>
+        <span class="choice-card-body">
+          <span class="choice-card-title">{{ c.user.get_full_name }}</span>
+          <span class="choice-card-meta">{{ c.phone|default:"—" }} &middot; {{ c.city|default:"—" }}</span>
+        </span>
+        <span class="choice-card-aside">
+          <span class="pill pill-completed">{% blocktrans count counter=c.doc_count %}{{ counter }} document{% plural %}{{ counter }} documents{% endblocktrans %}</span>
+        </span>
       </label>
+      {% endwith %}
       {% endfor %}
       {% if not wizard.form.client.field.queryset.exists %}
-      <div class="card" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan macaamiil oo diiwaangashan.</div>
+      <div class="card">
+        <div class="empty-state">{% icon "users" size=32 %}<div class="empty-state-body">{% trans "No registered clients yet." %}</div></div>
+      </div>
       {% endif %}
     </div>
 
   {% elif wizard.steps.current == 'template' %}
-    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Qaabka Dokumeentiga</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Macmiilka la doortay: <strong>{{ selected_client }}</strong></p>
+    <h2 class="wizard-section-title">{% trans "Choose the Document Template" %}</h2>
+    <p class="wizard-section-subtitle">{% blocktrans with client=selected_client %}Selected client: <strong>{{ client }}</strong>{% endblocktrans %}</p>
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
       {% for radio in wizard.form.template %}
-      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+      {% with t=radio.data.value.instance %}
+      <label class="choice-card">
         {{ radio.tag }}
-        <span>{{ radio.choice_label }}</span>
+        <span class="choice-card-body">
+          <span class="choice-card-title">{{ t.title }}</span>
+        </span>
+        <span class="choice-card-aside">
+          <span class="tag tag-navy">{{ t.category }}</span>
+          <span class="tag {% if t.party_type == 'TWO' %}tag-purple{% else %}tag-teal{% endif %}">{{ t.party_label }}</span>
+        </span>
       </label>
+      {% endwith %}
       {% endfor %}
       {% if not wizard.form.template.field.queryset.exists %}
-      <div class="card" style="padding:24px; text-align:center; color:var(--text-muted);">Wali ma jiraan qaabab. <a href="{% url 'notary_template_new' %}">Samee mid cusub</a>.</div>
+      <div class="card">
+        <div class="empty-state">{% icon "document-text" size=32 %}<div class="empty-state-body">{% trans "No templates yet." %} <a href="{% url 'notary_template_new' %}">{% trans "Create one" %}</a>.</div></div>
+      </div>
       {% endif %}
     </div>
 
   {% elif wizard.steps.current == 'party2' %}
-    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dooro Dhinaca Labaad</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Qaabkani waa heshiis laba-dhinac ah — dooro macmiilka labaad.</p>
-    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
+    <h2 class="wizard-section-title">{% trans "Choose the Second Party" %}</h2>
+    <p class="wizard-section-subtitle">{% trans "This template is a two-party agreement — choose the second client." %}</p>
+    <div class="search-field input-field" style="max-width:360px; margin-bottom:14px;">
+      {% icon "magnifying-glass" size=16 %}
+      <input type="search" id="party2-search-input" placeholder="{% trans 'Search clients (name or phone)...' %}" autocomplete="off">
+    </div>
+    <div id="party2-radio-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;">
       {% for radio in wizard.form.client2 %}
-      <label class="card" style="display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer;">
+      {% with c=radio.data.value.instance %}
+      <label class="choice-card">
         {{ radio.tag }}
-        <span>{{ radio.choice_label }}</span>
+        <span class="avatar">{{ c.user.first_name|slice:":1" }}{{ c.user.last_name|slice:":1" }}</span>
+        <span class="choice-card-body">
+          <span class="choice-card-title">{{ c.user.get_full_name }}</span>
+          <span class="choice-card-meta">{{ c.phone|default:"—" }} &middot; {{ c.city|default:"—" }}</span>
+        </span>
+        <span class="choice-card-aside">
+          <span class="pill pill-completed">{% blocktrans count counter=c.doc_count %}{{ counter }} document{% plural %}{{ counter }} documents{% endblocktrans %}</span>
+        </span>
       </label>
+      {% endwith %}
       {% endfor %}
     </div>
 
   {% elif wizard.steps.current == 'witnesses' %}
-    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Marqaatiyaal (Witnesses)</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Geli magacyada iyo telefoonada marqaatiyaasha (ikhtiyaari oo lix).</p>
+    <h2 class="wizard-section-title">{% trans "Witnesses" %}</h2>
+    <p class="wizard-section-subtitle">{% trans "Enter the witnesses' names and phone numbers (optional, up to six)." %}</p>
     {{ wizard.form.management_form }}
-    <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:28px;">
+    <div id="witness-list" style="display:flex; flex-direction:column; gap:14px; margin-bottom:16px;">
       {% for f in wizard.form.forms %}
-      <div class="card" style="padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-        <div class="input-field"><label>{{ forloop.counter }}. Magaca</label>{{ f.name }}</div>
-        <div class="input-field"><label>Telefoonka</label>{{ f.phone }}</div>
+      <div class="witness-card">
+        <div class="input-field"><label><span class="witness-badge">{{ forloop.counter }}</span>{% trans "Name" %}</label>{{ f.name }}</div>
+        <div class="input-field"><label>{% trans "Phone" %}</label>{{ f.phone }}</div>
       </div>
       {% endfor %}
     </div>
+    <button type="button" id="add-witness-btn" class="btn btn-secondary btn-sm" style="margin-bottom:28px;">{% icon "plus" size=14 %}{% trans "Add Witness" %}</button>
 
   {% elif wizard.steps.current == 'confirm' %}
-    <h2 style="font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text-strong); margin:0 0 6px;">Dib-u-eeg Dokumeentiga</h2>
-    <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Hubi macluumaadka ka hor intaadan xaqiijin.</p>
-    <div class="card" style="overflow:hidden; margin-bottom:24px;">
+    <h2 class="wizard-section-title">{% trans "Review the Document" %}</h2>
+    <p class="wizard-section-subtitle">{% trans "Check the details below before confirming." %}</p>
+    <div class="card public-card" style="overflow:hidden; margin-bottom:24px; padding:0;">
       <div style="background:var(--gradient-ink); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;">
-        <span style="color:#fff; font-family:var(--font-display); font-weight:700;">Sahal Notary System</span>
+        <span style="color:#fff; font-family:var(--font-display); font-weight:700; display:flex; align-items:center; gap:8px;">{% icon "shield-check" size=18 css_class="icon-white" %}{% trans "Sahal Notary System" %}</span>
         <span style="font-family:var(--font-mono); font-size:13px; color:rgba(255,255,255,0.8);">{{ preview_template.title }}</span>
       </div>
       <div style="padding:32px 36px;">
         <div style="background:var(--surface-sunken); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:22px; display:flex; gap:32px; flex-wrap:wrap;">
           <div>
-            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Dhinaca 1aad</div>
+            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">{% trans "Party 1" %}</div>
             <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ preview_client }}</div>
           </div>
           {% if is_two_party %}
           <div>
-            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Dhinaca 2aad</div>
+            <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">{% trans "Party 2" %}</div>
             <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-strong);">{{ preview_client2 }}</div>
           </div>
           {% endif %}
@@ -98,7 +151,7 @@
         <p style="font-size:13.5px; line-height:1.85; color:var(--text-body); white-space:pre-wrap; text-align:justify;">{{ preview_body }}</p>
         {% if show_witnesses_preview and preview_witnesses %}
         <div style="margin-top:20px; padding-top:16px; border-top:1px dashed var(--border-subtle);">
-          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Marqaatiyaal</div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">{% trans "Witnesses" %}</div>
           {% for w in preview_witnesses %}
           <div style="font-size:13.5px; color:var(--text-strong); margin-bottom:4px;">{{ w.name }} — {{ w.phone }}</div>
           {% endfor %}
@@ -108,12 +161,48 @@
     </div>
   {% endif %}
 
-  <div style="display:flex; justify-content:space-between; margin-top:8px;">
+  <div class="form-actions">
     {% if wizard.steps.prev %}
-    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn">← Hore</button>
+    <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn btn-secondary" style="height:44px;">{% icon "chevron-left" size=15 %}{% trans "Back" %}</button>
     {% else %}<span></span>{% endif %}
-    <button type="submit" class="btn btn-primary">{% if wizard.steps.current == 'confirm' %}Xaqiiji &amp; Abuuri →{% else %}Xiga →{% endif %}</button>
+    <button type="submit" class="btn btn-primary" style="height:44px;">{% if wizard.steps.current == 'confirm' %}{% trans "Confirm & Create" %}{% icon "check" size=16 %}{% else %}{% trans "Next" %}{% icon "chevron-right" size=15 %}{% endif %}</button>
   </div>
 </form>
 </div>
+</div>
+<script src="{% static 'portal/js/live_filter.js' %}"></script>
+<script>
+  initLiveFilter('client-search-input', 'label', '#client-radio-list');
+  initLiveFilter('party2-search-input', 'label', '#party2-radio-list');
+
+  (function () {
+    var list = document.getElementById('witness-list');
+    var addBtn = document.getElementById('add-witness-btn');
+    var totalInput = document.getElementById('id_witnesses-TOTAL_FORMS');
+    var maxInput = document.getElementById('id_witnesses-MAX_NUM_FORMS');
+    if (!list || !addBtn || !totalInput) return;
+
+    function refreshButton() {
+      var max = maxInput ? parseInt(maxInput.value, 10) : list.children.length;
+      addBtn.style.display = list.children.length >= max ? 'none' : '';
+    }
+
+    addBtn.addEventListener('click', function () {
+      var index = list.children.length;
+      var card = list.children[0].cloneNode(true);
+      card.querySelectorAll('input').forEach(function (input) {
+        input.value = '';
+        input.name = input.name.replace(/-\d+-/, '-' + index + '-');
+        input.id = input.id.replace(/-\d+-/, '-' + index + '-');
+      });
+      var badge = card.querySelector('.witness-badge');
+      if (badge) badge.textContent = index + 1;
+      list.appendChild(card);
+      totalInput.value = list.children.length;
+      refreshButton();
+    });
+
+    refreshButton();
+  })();
+</script>
 {% endblock %}

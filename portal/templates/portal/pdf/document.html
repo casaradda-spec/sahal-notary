@@ -80,11 +80,18 @@
         {% if document.notary.seal_image %}<img src="{{ document.notary.seal_image.url }}" alt="Shaambadda {{ document.notary.user.get_full_name }}" style="width:74px; height:74px; border-radius:50%; object-fit:cover;">{% else %}S<br>SAHAL<br>NOTARY{% endif %}
       </td>
       <td style="padding-left:12px; text-align:left;">
-        <div class="sig-name">{{ document.notary.user.get_full_name }}</div>
-        <div class="sig-line"></div>
-        <div class="sig-sub">{{ document.notary.license_number }}</div>
+        {% if document.notary.signature %}
+        <img src="{{ document.notary.signature.url }}" alt="Saxiixa {{ document.notary.user.get_full_name }}" style="max-height:34px; height:auto; width:auto; max-width:130px; margin-bottom:4px;">
+        {% else %}
+        <div class="sig-line" style="width:110px;"></div>
+        {% endif %}
+        <div class="sig-sub">{{ document.notary.user.get_full_name }} &middot; {{ document.notary.license_number }}</div>
       </td>
     </tr></table>
+    <div style="margin-top:14px;">
+      <img src="{{ qr_data_uri }}" alt="QR Xaqiijin" style="width:72px; height:72px;">
+      <div style="font-size:6.5pt; color:#6B7890; margin-top:2px;">Iskaan si aad u xaqiijiso</div>
+    </div>
   </td>
 </tr></table>
 

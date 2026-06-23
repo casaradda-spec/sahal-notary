@@ -23,14 +23,14 @@ class VerifyPageTests(TestCase):
         self.assertEqual(response.context['document'], self.doc)
         self.assertContains(response, 'Amina Yusuf')
         self.assertContains(response, self.doc.content_hash)
-        self.assertContains(response, 'XAQIIJISAN')
+        self.assertContains(response, 'VERIFIED')
 
     def test_unknown_token_shows_not_found_state_not_404(self):
         random_token = uuid.uuid4()
         response = self.client.get(reverse('verify', args=[random_token]))
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context['document'])
-        self.assertContains(response, 'lama xaqiijin karo')
+        self.assertContains(response, 'cannot be verified')
 
 
 class QrImageTests(TestCase):

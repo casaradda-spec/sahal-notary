@@ -1,0 +1,39 @@
+{% extends base_template %}
+{% load i18n icons %}
+{% block title %}{% blocktrans with ref=document.ref %}Edit {{ ref }}{% endblocktrans %} — {% trans "Sahal Notary System" %}{% endblock %}
+{% block content %}
+<div style="max-width:680px;">
+  <h1 style="font-size:24px; font-weight:800; letter-spacing:var(--tracking-tight); color:var(--text-strong); margin:0 0 6px; display:flex; align-items:center; gap:10px;">{% icon "pencil-square" size=22 css_class="icon-brand" %}{% trans "Edit Document" %}</h1>
+  <p class="cell-mono" style="margin:0 0 24px;">{{ document.ref }}</p>
+
+  {% if form.non_field_errors %}
+  <div class="alert alert-warning" style="margin-bottom:20px;">
+    {% icon "exclamation-triangle" size=16 %}
+    <div>{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+  </div>
+  {% endif %}
+
+  <form method="post" class="card" style="padding:28px; display:flex; flex-direction:column; gap:18px;">
+    {% csrf_token %}
+    <div class="input-field {% if form.template.errors %}has-error{% endif %}">
+      <label for="{{ form.template.id_for_label }}">{{ form.template.label }}</label>
+      {{ form.template }}
+      {% for error in form.template.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
+    <div class="input-field {% if form.client.errors %}has-error{% endif %}">
+      <label for="{{ form.client.id_for_label }}">{{ form.client.label }}</label>
+      {{ form.client }}
+      {% for error in form.client.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
+    <div class="input-field {% if form.client2.errors %}has-error{% endif %}">
+      <label for="{{ form.client2.id_for_label }}">{{ form.client2.label }} <span style="color:var(--text-muted); font-weight:400;">({% trans "two-party templates only" %})</span></label>
+      {{ form.client2 }}
+      {% for error in form.client2.errors %}<div class="field-error">{% icon "exclamation-triangle" size=14 %}{{ error }}</div>{% endfor %}
+    </div>
+    <div style="display:flex; gap:12px; margin-top:6px;">
+      <a href="{% url 'notary_document_detail' document.ref %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-primary" style="flex:1;">{% icon "check" size=16 %}{% trans "Save & Regenerate" %}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

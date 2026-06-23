@@ -3,8 +3,11 @@
 {% block body %}
 <div class="public-page">
   <div class="public-card">
+    <div style="display:flex; justify-content:flex-end; margin-bottom:6px;">
+      {% include "portal/includes/language_switcher.html" %}
+    </div>
     <div style="display:flex; justify-content:center; margin-bottom:22px;">
-      <img src="{% static 'portal/img/logo-full.jpeg' %}" alt="Sahal Notary System" style="width:96px; height:auto; mix-blend-mode:multiply;">
+      <img src="{% static 'portal/img/logo-full.jpeg' %}" alt="Sahal Notary System" style="height:64px; width:auto; mix-blend-mode:multiply;">
     </div>
     {% block public_content %}{% endblock %}
   </div>

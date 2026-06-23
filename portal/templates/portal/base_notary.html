@@ -1,32 +1,73 @@
 {% extends "portal/base.html" %}
+{% load static i18n icons %}
 {% block body %}
 <div class="app-shell">
-  <div class="sidebar sidebar-notary">
+  <div class="mobile-header">
+    <button type="button" class="hamburger-btn" id="sidebar-toggle" aria-label="{% trans 'Open menu' %}" aria-expanded="false" aria-controls="app-sidebar">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+    <span class="mobile-header-title">{% trans "Notary System" %}</span>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="sidebar sidebar-notary" id="app-sidebar">
+    <script>(function(){try{if(localStorage.getItem('sahal_sidebar_collapsed')==='1'){document.currentScript.parentElement.classList.add('collapsed');}}catch(e){}})();</script>
+    <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="{% trans 'Collapse sidebar' %}">{% icon "chevron-left" size=14 %}</button>
     <div class="sidebar-brand">
-      <span class="sidebar-logo" style="background:var(--gradient-brand);">S</span>
-      <div>
-        <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:#fff; line-height:1.15;">Sahal</div>
-        <div style="font-size:10px; font-weight:600; color:rgba(255,255,255,0.45); letter-spacing:0.06em; text-transform:uppercase;">Notary System</div>
-      </div>
+      <span class="sidebar-logo">S</span>
+      <span class="sidebar-brand-text">SAHAL</span>
+    </div>
+    <div class="sidebar-lang">
+      {% include "portal/includes/language_switcher.html" with variant="lang-switch-dark" %}
     </div>
     <nav class="sidebar-nav">
-      <a href="{% url 'admin_clients' %}" class="{% if active_nav == 'clients' %}active{% endif %}">Macaamiisha</a>
-      <a href="{% url 'notary_templates' %}" class="{% if active_nav == 'templates' %}active{% endif %}">Qaababka</a>
-      <a href="{% url 'notary_create' %}" class="{% if active_nav == 'create' %}active{% endif %}">Samee Dokumeenti</a>
-      <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}">Dhammaan Dokumentiyada</a>
-      <a href="{% url 'notary_profile' %}" class="{% if active_nav == 'profile' %}active{% endif %}">Borofaaylka</a>
+      <a href="{% url 'admin_clients' %}" class="{% if active_nav == 'clients' %}active{% endif %}" data-label="{% trans 'Clients' %}">{% icon "users" size=20 %}<span class="nav-label">{% trans "Clients" %}</span></a>
+      <a href="{% url 'notary_templates' %}" class="{% if active_nav == 'templates' %}active{% endif %}" data-label="{% trans 'Templates' %}">{% icon "document-text" size=20 %}<span class="nav-label">{% trans "Templates" %}</span></a>
+      <a href="{% url 'notary_create' %}" class="{% if active_nav == 'create' %}active{% endif %}" data-label="{% trans 'Create Document' %}">{% icon "document-plus" size=20 %}<span class="nav-label">{% trans "Create Document" %}</span></a>
+      <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}" data-label="{% trans 'All Documents' %}">{% icon "rectangle-stack" size=20 %}<span class="nav-label">{% trans "All Documents" %}</span></a>
+      <a href="{% url 'notary_profile' %}" class="{% if active_nav == 'profile' %}active{% endif %}" data-label="{% trans 'Profile' %}">{% icon "user-circle" size=20 %}<span class="nav-label">{% trans "Profile" %}</span></a>
     </nav>
     <div class="sidebar-foot">
       <span class="avatar">{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</span>
-      <div style="flex:1; min-width:0;">
+      <div class="sidebar-foot-info" style="flex:1; min-width:0;">
         <div style="font-family:var(--font-display); font-size:13px; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ request.user.get_full_name }}</div>
-        <div style="font-size:11px; color:rgba(255,255,255,0.5);">Notaayo · {{ request.user.notary_profile.region }}</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.5);">{% trans "Notary" %} &middot; {{ request.user.notary_profile.region }}</div>
       </div>
-      <a href="{% url 'logout' %}" style="color:rgba(255,255,255,0.6); font-size:12px;">Ka bax</a>
+      <a href="{% url 'logout' %}" class="sidebar-foot-logout" title="{% trans 'Log Out' %}" aria-label="{% trans 'Log Out' %}">{% icon "arrow-right-on-rectangle" size=17 %}</a>
     </div>
   </div>
   <div class="main-content">
-    {% block content %}{% endblock %}
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span>{% trans "Notary System" %}</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">
+          {% if active_nav == 'clients' %}{% trans "Clients" %}
+          {% elif active_nav == 'templates' %}{% trans "Templates" %}
+          {% elif active_nav == 'create' %}{% trans "Create Document" %}
+          {% elif active_nav == 'documents' %}{% trans "All Documents" %}
+          {% elif active_nav == 'profile' %}{% trans "Profile" %}
+          {% else %}{% trans "Overview" %}{% endif %}
+        </span>
+      </div>
+      <div class="topbar-user">
+        <div style="text-align:right;">
+          <div class="topbar-user-name">{{ request.user.get_full_name }}</div>
+          <div class="topbar-user-role">{% trans "Notary" %}</div>
+        </div>
+        <span class="avatar">{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}</span>
+      </div>
+    </div>
+    <div class="main-content-inner">
+      {% block content %}{% endblock %}
+    </div>
   </div>
+  <nav class="bottom-nav">
+    <a href="{% url 'admin_clients' %}" class="{% if active_nav == 'clients' %}active{% endif %}">{% icon "users" size=20 %}{% trans "Clients" %}</a>
+    <a href="{% url 'notary_templates' %}" class="{% if active_nav == 'templates' %}active{% endif %}">{% icon "document-text" size=20 %}{% trans "Templates" %}</a>
+    <a href="{% url 'notary_create' %}" class="{% if active_nav == 'create' %}active{% endif %}">{% icon "document-plus" size=20 %}{% trans "Create Document" %}</a>
+    <a href="{% url 'notary_documents' %}" class="{% if active_nav == 'documents' %}active{% endif %}">{% icon "rectangle-stack" size=20 %}{% trans "All Documents" %}</a>
+    <a href="{% url 'notary_profile' %}" class="{% if active_nav == 'profile' %}active{% endif %}">{% icon "user-circle" size=20 %}{% trans "Profile" %}</a>
+  </nav>
 </div>
+<script src="{% static 'portal/js/sidebar.js' %}"></script>
 {% endblock %}

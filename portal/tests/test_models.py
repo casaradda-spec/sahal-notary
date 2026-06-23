@@ -90,12 +90,26 @@ class ClientProfileDocCountTests(TestCase):
         self.assertEqual(c2.doc_count, 2)
 
 
+class ClientProfileRequiredFieldsTests(TempMediaTestCase):
+    def test_complete_profile_has_no_missing_fields(self):
+        client = make_client_profile('completereqclient', with_signature=True)
+        self.assertEqual(client.missing_required_fields(), [])
+
+    def test_missing_phone_and_signature_are_reported(self):
+        client = make_client_profile('partialreqclient', phone='', with_signature=False)
+        self.assertEqual(client.missing_required_fields(), ['phone', 'signature'])
+
+    def test_blank_full_name_is_reported(self):
+        client = make_client_profile('noname', first='', last='', with_signature=True)
+        self.assertIn('full_name', client.missing_required_fields())
+
+
 class DocumentTemplatePartyLabelTests(TestCase):
     def test_party_label_reflects_party_type(self):
         one = make_template(title='One', party_type=DocumentTemplate.PartyType.ONE)
         two = make_template(title='Two', party_type=DocumentTemplate.PartyType.TWO)
-        self.assertEqual(one.party_label, 'Hal Dhinac')
-        self.assertEqual(two.party_label, 'Laba Dhinac')
+        self.assertEqual(one.party_label, 'One Party')
+        self.assertEqual(two.party_label, 'Two Parties')
 
 
 class SignatureEmbeddingTests(TempMediaTestCase):
@@ -124,7 +138,7 @@ class SignatureEmbeddingTests(TempMediaTestCase):
         doc = Document(template=template, notary=self.notary, client=self.unsigned_client, city='Muqdisho')
         doc.ref = 'SNS-9101'
         rendered = doc.render_body()
-        self.assertIn('Saxiix lama helin', rendered)
+        self.assertIn('No signature on file', rendered)
         self.assertNotIn('<img', rendered)
 
     def test_client1_and_client2_signature_tokens_resolve_independently(self):
@@ -139,7 +153,7 @@ class SignatureEmbeddingTests(TempMediaTestCase):
         doc.ref = 'SNS-9102'
         rendered = doc.render_body()
         self.assertIn(self.signed_client.signature.url, rendered)
-        self.assertIn('Saxiix lama helin', rendered)
+        self.assertIn('No signature on file', rendered)
 
     def test_client2_signature_blank_when_no_second_party(self):
         template = make_template(

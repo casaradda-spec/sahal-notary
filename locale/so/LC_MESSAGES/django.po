@@ -1,0 +1,608 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Language: LC_MESSAGES\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Log Out"
+msgstr "Ka bax"
+
+msgid "Clients"
+msgstr "Macaamiisha"
+
+msgid "Templates"
+msgstr "Qaababka"
+
+msgid "Create Document"
+msgstr "Samee Dokumeenti Cusub"
+
+msgid "All Documents"
+msgstr "Dhammaan Dokumentiyada"
+
+msgid "Profile"
+msgstr "Borofaaylka"
+
+msgid "Notary System"
+msgstr "Nidaamka Notaayada"
+
+msgid "Notary"
+msgstr "Notaayo"
+
+msgid "Admin Panel"
+msgstr "Maamulka"
+
+msgid "Administrator"
+msgstr "Maamule Guud"
+
+msgid "Navigation"
+msgstr "Navigaashin"
+
+msgid "Notaries"
+msgstr "Notaayada"
+
+msgid "Reports"
+msgstr "Warbixinnada"
+
+msgid "List"
+msgstr "Liiska"
+
+msgid "Add New"
+msgstr "Diiwaangeli Cusub"
+
+msgid "Register New Client"
+msgstr "Diiwaangeli Macmiil Cusub"
+
+msgid "Client's Signature"
+msgstr "Saxiixa Macmiilka"
+
+msgid "Clear"
+msgstr "Tirtir"
+
+msgid ""
+"A username and temporary password (\"123\") will be created automatically. "
+"The client will be asked to change the password the first time they log in."
+msgstr ""
+"Username-ka iyo furaha hore ee \"123\" ayaa si toos ah loo abuuri doonaa. "
+"Macmiilku wuxuu bedeli doonaa furaha markuu uga soo galo."
+
+msgid "Cancel"
+msgstr "Jooji"
+
+msgid "Register Client"
+msgstr "Diiwaangeli Macmiilka"
+
+msgid "Search clients (name or phone)..."
+msgstr "Raadi macmiil (magac ama telefoon)..."
+
+msgid "CLIENT"
+msgstr "MACMIILKA"
+
+msgid "PHONE"
+msgstr "TELEFOON"
+
+msgid "CITY"
+msgstr "MAGAALO"
+
+msgid "USERNAME"
+msgstr "USERNAME"
+
+msgid "DOCS"
+msgstr "DOCS"
+
+msgid "SIGNATURE"
+msgstr "SAXIIX"
+
+msgid "ACTION"
+msgstr "FICIL"
+
+msgid "Missing"
+msgstr "Lama heli"
+
+msgid "Edit"
+msgstr "Wax ka beddel"
+
+msgid "Delete"
+msgstr "Tirtir"
+
+msgid "No clients yet."
+msgstr "Wali ma jiraan macaamiil."
+
+msgid "Edit Client"
+msgstr "Wax ka beddel Macmiilka"
+
+msgid "Current signature"
+msgstr "Saxiixa hadda"
+
+msgid "If you don't draw a new signature, the existing one will be kept."
+msgstr "Haddii aadan saxiix cusub geliyn, saxiixa hore wuu sii jirayaa."
+
+msgid "Save Changes"
+msgstr "Kaydi Isbeddelka"
+
+msgid "Draw a new signature below if you want to replace the current one."
+msgstr ""
+"Sawir oo cusub buuxi haddii aad rabto inaad bedesho saxiixa hadda jira."
+
+msgid "Current Signature"
+msgstr "Saxiixa Hadda"
+
+msgid "New Signature"
+msgstr "Saxiixa Cusub"
+
+msgid "Save Signature"
+msgstr "Kaydi Saxiixa"
+
+msgid "Add Notary"
+msgstr "Kudar Notaayo"
+
+msgid "Add New Notary"
+msgstr "Kudar Notaayo Cusub"
+
+msgid "Notary's Signature"
+msgstr "Saxiixa Notaayada"
+
+msgid "A username and temporary password (\"123\") will be created automatically."
+msgstr "Username-ka iyo furaha hore ee \"123\" ayaa si toos ah loo abuuri doonaa."
+
+msgid "documents"
+msgstr "dokumeenti"
+
+msgid "rating"
+msgstr "qiimeyn"
+
+msgid "Active"
+msgstr "Shaqeeya"
+
+msgid "No notaries yet."
+msgstr "Wali ma jiraan notaayo."
+
+msgid "Edit Notary"
+msgstr "Wax ka beddel Notaayada"
+
+msgid "Current stamp"
+msgstr "Shaambadda hadda"
+
+msgid "If you don't upload a new image, the current stamp will be kept."
+msgstr "Haddii aadan sawir cusub geliyn, shaambadda hore way sii jirayaan."
+
+msgid "Total Documents"
+msgstr "Dokumentiyo Guud"
+
+msgid "Notary Activity"
+msgstr "Waxqabadka Notaayada"
+
+msgid "No data yet."
+msgstr "Wali ma jiraan xog."
+
+msgid "Recent Activity"
+msgstr "Dhaqdhaqaaqa Dhowaan"
+
+msgid "No activity yet."
+msgstr "Wali ma jiraan dhaqdhaqaaq."
+
+msgid "Sign In"
+msgstr "Soo gal"
+
+msgid "Sign in to your account"
+msgstr "Soo gal akoonkaaga"
+
+msgid "Enter your username and password to continue."
+msgstr "Geli magacaaga iyo furahaaga si aad u gasho."
+
+msgid "YOUR SECURITY MATTERS"
+msgstr "SUGNAANTAADA AYAA MUHIIM AH"
+
+msgid "Remember me"
+msgstr "I xasuuso"
+
+msgid "Username"
+msgstr "Magaca isticmaalaha"
+
+msgid "Password"
+msgstr "Furaha sirta ah"
+
+msgid "Change Your Password"
+msgstr "Bedel furahaaga"
+
+msgid ""
+"This is your first time signing in. Please change the temporary password "
+"<span style=\"font-family:var(--font-mono); background:var(--surface-"
+"sunken); padding:1px 7px; border-radius:6px; color:var(--text-strong); font-"
+"weight:600;\">123</span> to a new one."
+msgstr ""
+"Tani waa markaagii ugu horreysay. Ka beddel furaha caadiga ah <span "
+"style=\"font-family:var(--font-mono); background:var(--surface-sunken); "
+"padding:1px 7px; border-radius:6px; color:var(--text-strong); font-"
+"weight:600;\">123</span> mid cusub."
+
+msgid "Enter your new password."
+msgstr "Geli furaha cusub."
+
+msgid "New Password"
+msgstr "Furaha cusub"
+
+msgid "Confirm New Password"
+msgstr "Xaqiiji furaha cusub"
+
+msgid "Your password is kept private and is never shared with anyone."
+msgstr "Furahaagu waa la qarinayaa, lagumana wadaagayo cidna."
+
+msgid "Save and Continue"
+msgstr "Kaydi oo sii wad"
+
+msgid "Full Name"
+msgstr "Magaca oo dhan"
+
+msgid "Phone"
+msgstr "Telefoonka"
+
+msgid "Email"
+msgstr "Iimaylka"
+
+msgid "National ID"
+msgstr "Aqoonsiga Qaranka (National ID)"
+
+msgid "Address"
+msgstr "Cinwaanka"
+
+msgid "City"
+msgstr "Magaalada"
+
+msgid "License Number"
+msgstr "Lambarka Ruqsadda"
+
+msgid "Region"
+msgstr "Gobolka"
+
+msgid "Signature"
+msgstr "Saxiixa"
+
+msgid "Stamp Image"
+msgstr "Sawirka Shaambooyinka"
+
+msgid "Template Title"
+msgstr "Cinwaanka Qaabka"
+
+msgid "Category"
+msgstr "Nooca"
+
+msgid "Parties"
+msgstr "Dhinacyada"
+
+msgid "Requires witnesses"
+msgstr "U baahan yahay marqaatiyaal"
+
+msgid "Body Text"
+msgstr "Qoraalka"
+
+msgid "Bio"
+msgstr "Taariikhda Shaqsiyeed"
+
+msgid "%(count)s documents"
+msgstr "%(count)s dokumeenti"
+
+msgid "Witness Name"
+msgstr "Magaca marqaatiga"
+
+msgid "Template"
+msgstr "Qaabka"
+
+msgid "Party 1"
+msgstr "Dhinaca 1aad"
+
+msgid "Party 2"
+msgstr "Dhinaca 2aad"
+
+msgid "No signature on file"
+msgstr "Saxiix lama helin"
+
+msgid "Signature of %(name)s"
+msgstr "Saxiixa %(name)s"
+
+msgid "One Party"
+msgstr "Hal Dhinac"
+
+msgid "Two Parties"
+msgstr "Laba Dhinac"
+
+msgid "Pending"
+msgstr "Sugaya"
+
+msgid "Signed"
+msgstr "La saxiixay"
+
+msgid "Completed"
+msgstr "Dhammaystiran"
+
+msgid "My Documents"
+msgstr "Dokumentiyadaada"
+
+msgid "Welcome"
+msgstr "Ku soo dhowow"
+
+msgid "total documents"
+msgstr "dukumenti guud ahaan"
+
+msgid "No documents yet"
+msgstr "Weli ma jiraan dokumentiyo"
+
+msgid "When a notary prepares a document for you, it will appear here."
+msgstr ""
+"Marka notaayo uu kuu sameeyo dokumenti caddaysan, halkan ayuu ka soo muuqan "
+"doonaa."
+
+msgid "All"
+msgstr "Dhammaan"
+
+msgid "Overview"
+msgstr "Guudmar"
+
+msgid "Total"
+msgstr "Guud ahaan"
+
+msgid "documents created"
+msgstr "dokumeenti la sameeyay"
+
+msgid "signatures completed"
+msgstr "saxiixa la dhammaystay"
+
+msgid "signatures awaited"
+msgstr "saxiix la sugayo"
+
+msgid "PDFs issued"
+msgstr "PDF la baahiyay"
+
+msgid "See All"
+msgstr "Dhammaantooda"
+
+msgid "REFERENCE"
+msgstr "TIXRAAC"
+
+msgid "TITLE"
+msgstr "MAGACA"
+
+msgid "STATUS"
+msgstr "XAALADDA"
+
+msgid "DATE"
+msgstr "TAARIIKHDA"
+
+msgid "No documents yet."
+msgstr "Wali ma jiraan dokumentiyo."
+
+msgid "New Template"
+msgstr "Samee Qaab Cusub"
+
+msgid "Are you sure you want to delete this template?"
+msgstr "Ma hubtaa inaad tirtirto qaabkan?"
+
+msgid "No templates yet. Create one to get started."
+msgstr "Wali ma jiraan qaabab. Samee mid cusub."
+
+msgid "Edit Template"
+msgstr "Wax ka beddel Qaabka"
+
+msgid "Write the template text and save it."
+msgstr "Qor qoraalka qaabka oo kaydi."
+
+msgid "Save Template"
+msgstr "Kaydi Qaabka"
+
+msgid ""
+"Use {{client_name}}, {{client2_name}}, {{date}}, {{city}}, {{notary_name}}, "
+"{{notary_license}}, {{ref}} to fill these in automatically. Use "
+"{{client_signature}} (or {{client1_signature}} / {{client2_signature}}) to "
+"insert the client's signature."
+msgstr ""
+"Isticmaal {{client_name}}, {{client2_name}}, {{date}}, {{city}}, "
+"{{notary_name}}, {{notary_license}}, {{ref}} si loo buuxiyo si toos ah. "
+"Isticmaal {{client_signature}} (ama {{client1_signature}} / "
+"{{client2_signature}}) si loo geliyo saxiixa macmiilka."
+
+msgid "DOCUMENT TITLE"
+msgstr "MAGACA DOKUMEENTIGA"
+
+msgid "NOTARY"
+msgstr "NOTAAYADA"
+
+msgid "TYPE"
+msgstr "NOOCA"
+
+msgid "View"
+msgstr "Eeg"
+
+msgid "Date"
+msgstr "Taariikhda"
+
+msgid "Witnesses"
+msgstr "Marqaatiyaal"
+
+msgid "PDF SHA-256"
+msgstr "SHA-256 PDF-ka"
+
+msgid "Needed before this can be completed:"
+msgstr "U baahan ka hor inta aan la dhammaystirin:"
+
+msgid "Download PDF"
+msgstr "Soo deji PDF-ka"
+
+msgid "Complete & Sign"
+msgstr "Dhammaystir & Saxiix"
+
+msgid "Back to Documents"
+msgstr "Ku noqo Dokumentiyada"
+
+msgid "Edit Document"
+msgstr "Wax ka beddel Dokumeentiga"
+
+msgid "two-party templates only"
+msgstr "qaababka laba-dhinac ah keliya"
+
+msgid "Save & Regenerate"
+msgstr "Kaydi & Dib u Samee"
+
+msgid "Verified Notary"
+msgstr "Notaayo Xaqiijisan"
+
+msgid "Stamp"
+msgstr "Shaambo"
+
+msgid "Edit Profile"
+msgstr "Wax ka beddel Borofaaylka"
+
+msgid "Document Created"
+msgstr "Dokumeenti la abuuray"
+
+msgid "Document created!"
+msgstr "Dokumeentiga waa la abuuray!"
+
+msgid ""
+"The PDF with the digital signature and official stamp is ready. The client "
+"will see it in their account."
+msgstr ""
+"PDF-ka oo leh saxiixa dijitaalka ah iyo shaambo rasmi ah ayaa diyaar. "
+"Macmiilku wuxuu ku arki doonaa akoonkiisa."
+
+msgid "Document Details"
+msgstr "Faahfaahin Dokumeentiga"
+
+msgid "Title"
+msgstr "Magaca"
+
+msgid "Client"
+msgstr "Macmiilka"
+
+msgid "Reference"
+msgstr "Tixraaca"
+
+msgid "Verification QR Code"
+msgstr "Kood QR ah oo xaqiijineed"
+
+msgid "The client can scan this to verify the document."
+msgstr "Macmiilku wuxuu sawiri karaa si uu u xaqiijiyo dokumeentiga"
+
+msgid "Choose the Client"
+msgstr "Dooro Macmiilka"
+
+msgid "Choose the client for this agreement."
+msgstr "Dooro macmiilka heshiiska."
+
+msgid "No registered clients yet."
+msgstr "Wali ma jiraan macaamiil oo diiwaangashan."
+
+msgid "Choose the Document Template"
+msgstr "Dooro Qaabka Dokumeentiga"
+
+msgid "No templates yet."
+msgstr "Wali ma jiraan qaabab."
+
+msgid "Create one"
+msgstr "Samee mid cusub"
+
+msgid "Choose the Second Party"
+msgstr "Dooro Dhinaca Labaad"
+
+msgid "This template is a two-party agreement — choose the second client."
+msgstr "Qaabkani waa heshiis laba-dhinac ah — dooro macmiilka labaad."
+
+msgid "Enter the witnesses' names and phone numbers (optional, up to six)."
+msgstr "Geli magacyada iyo telefoonada marqaatiyaasha (ikhtiyaari oo lix)."
+
+msgid "Name"
+msgstr "Magaca"
+
+msgid "Review the Document"
+msgstr "Dib-u-eeg Dokumeentiga"
+
+msgid "Check the details below before confirming."
+msgstr "Hubi macluumaadka ka hor intaadan xaqiijin."
+
+msgid "Back"
+msgstr "Hore"
+
+msgid "Confirm & Create"
+msgstr "Xaqiiji & Abuuri"
+
+msgid "Next"
+msgstr "Xiga"
+
+msgid "Review"
+msgstr "Dib-u-eeg"
+
+msgid "Confirm"
+msgstr "Xaqiiji"
+
+msgid "Verify Document"
+msgstr "Xaqiijin Dokumeenti"
+
+msgid "This document is"
+msgstr "Dokumeentiga waa"
+
+msgid "VERIFIED"
+msgstr "XAQIIJISAN yahay"
+
+msgid "Verified"
+msgstr "La xaqiijiyay"
+
+msgid "Original Document"
+msgstr "Dokumeentiga asalka ah"
+
+msgid "Cannot be altered"
+msgstr "Aan la beddelin karin"
+
+msgid "Official Verification"
+msgstr "Xaqiijin Rasmi ah"
+
+msgid "This code cannot be verified"
+msgstr "Kood-kan lama xaqiijin karo"
+
+msgid "This document could not be found, or the QR code is invalid."
+msgstr "Dokumeentigan lama helin, ama koodhka QR-ku waa khalad."
+
+msgid "Signature of %(full_name)s"
+msgstr "Saxiixa %(full_name)s"
+
+msgid "Are you sure you want to delete %(full_name)s?"
+msgstr "Ma hubtaa inaad tirtirto %(full_name)s?"
+
+msgid "Edit %(full_name)s"
+msgstr "Wax ka beddel %(full_name)s"
+
+msgid "Signature — %(full_name)s"
+msgstr "Saxiixa %(full_name)s"
+
+msgid "Good morning, %(first_name)s 👋"
+msgstr "Subax wanaagsan, %(first_name)s 👋"
+
+msgid "Edit %(ref)s"
+msgstr "Wax ka beddel %(ref)s"
+
+msgid "Selected client: <strong>%(client)s</strong>"
+msgstr "Macmiilka la doortay: <strong>%(client)s</strong>"
+
+msgid "%(counter)s registered client"
+msgid_plural "%(counter)s registered clients"
+msgstr[0] "%(counter)s macmiil oo diiwaangashan"
+msgstr[1] "%(counter)s macmiil oo diiwaangashan"
+
+msgid "%(counter)s active notary"
+msgid_plural "%(counter)s active notaries"
+msgstr[0] "%(counter)s notaayo oo shaqeeya"
+msgstr[1] "%(counter)s notaayo oo shaqeeya"
+
+msgid "%(counter)s template available"
+msgid_plural "%(counter)s templates available"
+msgstr[0] "%(counter)s qaab oo diyaar ah"
+msgstr[1] "%(counter)s qaab oo diyaar ah"
+
+msgid "Used %(counter)s time"
+msgid_plural "Used %(counter)s times"
+msgstr[0] "Loo isticmaalay %(counter)s jeer"
+msgstr[1] "Loo isticmaalay %(counter)s jeer"
+
+msgid "There is %(counter)s document waiting to be signed."
+msgid_plural "There are %(counter)s documents waiting to be signed."
+msgstr[0] "Waxaa jira %(counter)s dokumeenti sugaya saxiixa."
+msgstr[1] "Waxaa jira %(counter)s dokumeenti sugaya saxiixa."

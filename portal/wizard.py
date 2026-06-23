@@ -1,5 +1,6 @@
 from django.db.models import F
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 from formtools.wizard.views import SessionWizardView
 
 from .forms import (
@@ -40,8 +41,8 @@ class CreateDocumentWizard(SessionWizardView):
         'witnesses': show_witnesses,
     }
 
-    # The design's step indicator only has 4 bubbles (Macmiilka / Qaabka / Dib-u-eeg / Xaqiiji);
-    # party2 and witnesses are extra data-entry sub-steps of "Qaabka" so they share its bubble.
+    # The design's step indicator only has 4 bubbles (Client / Template / Review / Confirm);
+    # party2 and witnesses are extra data-entry sub-steps of "Template" so they share its bubble.
     STEP_BUBBLE = {
         'client': 1,
         'template': 2,
@@ -66,7 +67,7 @@ class CreateDocumentWizard(SessionWizardView):
         context['active_nav'] = 'create'
         context['base_template'] = role_base_template(self.request.user)
         context['step_bubble'] = self.STEP_BUBBLE.get(self.steps.current, 1)
-        context['step_labels'] = [(1, 'Macmiilka'), (2, 'Qaabka'), (3, 'Dib-u-eeg'), (4, 'Xaqiiji')]
+        context['step_labels'] = [(1, _('Client')), (2, _('Template')), (3, _('Review')), (4, _('Confirm'))]
         if self.steps.current == 'template':
             client_data = self.get_cleaned_data_for_step('client') or {}
             context['selected_client'] = client_data.get('client')

@@ -250,12 +250,87 @@ class NotaryDocumentDetailTests(TestCase):
     def test_complete_button_only_shown_when_pending(self):
         self.client.force_login(self.notary.user)
         response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
-        self.assertContains(response, 'Dhammaystir')
+        self.assertContains(response, 'Complete')
 
         self.doc.status = Document.Status.COMPLETED
         self.doc.save(update_fields=['status'])
         response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
-        self.assertNotContains(response, 'Dhammaystir &amp; Saxiix')
+        self.assertNotContains(response, 'Complete &amp; Sign')
+
+    def test_edit_button_only_shown_when_pending(self):
+        self.client.force_login(self.notary.user)
+        edit_url = reverse('notary_document_edit', args=[self.doc.ref])
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertContains(response, edit_url)
+
+        self.doc.status = Document.Status.COMPLETED
+        self.doc.save(update_fields=['status'])
+        response = self.client.get(reverse('notary_document_detail', args=[self.doc.ref]))
+        self.assertNotContains(response, edit_url)
+
+
+class DocumentEditTests(TempMediaTestCase):
+    def setUp(self):
+        self.notary = make_notary_profile('editnotary')
+        self.one_party_template = make_template(
+            title='Original', party_type=DocumentTemplate.PartyType.ONE, created_by=self.notary,
+        )
+        self.two_party_template = make_template(
+            title='TwoParty', party_type=DocumentTemplate.PartyType.TWO, created_by=self.notary,
+        )
+        self.original_client = make_client_profile('editorigclient', first='Amina', last='Yusuf', with_signature=True)
+        self.new_client = make_client_profile('editnewclient', first='Cabdi', last='Xasan', with_signature=True)
+        self.doc = Document(template=self.one_party_template, notary=self.notary, client=self.original_client, city='Muqdisho')
+        self.doc.finalize()
+        self.doc.save()
+        self.client.force_login(self.notary.user)
+
+    def test_get_prefills_current_selections(self):
+        response = self.client.get(reverse('notary_document_edit', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['form'].initial['client'], self.original_client)
+        self.assertEqual(response.context['form'].initial['template'], self.one_party_template)
+
+    def test_completed_document_cannot_be_edited(self):
+        self.doc.status = Document.Status.COMPLETED
+        self.doc.save(update_fields=['status'])
+        response = self.client.get(reverse('notary_document_edit', args=[self.doc.ref]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_changing_client_and_template_regenerates_rendered_body(self):
+        old_hash = self.doc.content_hash
+        response = self.client.post(reverse('notary_document_edit', args=[self.doc.ref]), {
+            'template': self.one_party_template.pk,
+            'client': self.new_client.pk,
+        })
+        self.assertRedirects(response, reverse('notary_document_detail', args=[self.doc.ref]))
+
+        self.doc.refresh_from_db()
+        self.assertEqual(self.doc.client, self.new_client)
+        self.assertEqual(self.doc.status, Document.Status.PENDING)
+        self.assertIn('Cabdi Xasan', self.doc.rendered_body)
+        self.assertNotEqual(self.doc.content_hash, old_hash)
+
+    def test_two_party_template_requires_client2(self):
+        response = self.client.post(reverse('notary_document_edit', args=[self.doc.ref]), {
+            'template': self.two_party_template.pk,
+            'client': self.original_client.pk,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'macmiilka labaad')
+        self.doc.refresh_from_db()
+        self.assertEqual(self.doc.template, self.one_party_template)
+
+    def test_incomplete_new_client_blocks_save(self):
+        incomplete = make_client_profile('editincomplete', first='Faadumo', last='Aadan', with_signature=False)
+        response = self.client.post(reverse('notary_document_edit', args=[self.doc.ref]), {
+            'template': self.one_party_template.pk,
+            'client': incomplete.pk,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Faadumo Aadan: signature missing')
+        self.doc.refresh_from_db()
+        self.assertEqual(self.doc.client, self.original_client)
 
 
 class DocumentCompletionTests(TempMediaTestCase):

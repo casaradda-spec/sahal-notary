@@ -1,17 +1,18 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext_lazy as _
 
 from accounts.decorators import role_required
 from accounts.models import User
 
 from .models import Document
-from .utils import render_pdf
+from .utils import pdf_context, render_pdf
 
 STATUS_CHIPS = [
-    ('ALL', 'Dhammaan'),
-    (Document.Status.PENDING, 'Sugaya'),
-    (Document.Status.SIGNED, 'La saxiixay'),
-    (Document.Status.COMPLETED, 'Dhammaystiran'),
+    ('ALL', _('All')),
+    (Document.Status.PENDING, _('Pending')),
+    (Document.Status.SIGNED, _('Signed')),
+    (Document.Status.COMPLETED, _('Completed')),
 ]
 
 
@@ -41,5 +42,7 @@ def dashboard(request):
 @role_required(User.Role.CLIENT)
 def document_pdf(request, ref):
     profile = request.user.client_profile
-    document = get_object_or_404(Document.objects.filter(Q(client=profile) | Q(client2=profile)), ref=ref)
-    return render_pdf('portal/pdf/document.html', {'document': document}, f'{document.ref}.pdf')
+    document = get_object_or_404(
+        Document.objects.select_related('notary').filter(Q(client=profile) | Q(client2=profile)), ref=ref
+    )
+    return render_pdf('portal/pdf/document.html', pdf_context(request, document), f'{document.ref}.pdf')
