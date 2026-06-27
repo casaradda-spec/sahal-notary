@@ -29,6 +29,10 @@
   <button type="submit" class="btn btn-primary btn-full" style="height:46px;">{% icon "arrow-right-on-rectangle" size=18 %}{% trans "Sign In" %}</button>
 </form>
 
+<div style="text-align:center; margin-top:14px;">
+  <a href="{% url 'forgot_password' %}" style="font-size:13px; color:var(--text-link); text-decoration:none;">{% trans "Forgot password?" %}</a>
+</div>
+
 <div style="display:flex; align-items:center; gap:10px; margin:22px 0;">
   <span style="flex:1; height:1px; background:var(--border-subtle);"></span>
   <span style="font-size:11px; color:var(--text-subtle); font-weight:600; letter-spacing:0.05em; display:flex; align-items:center; gap:6px;">{% icon "lock-closed" size=13 %}{% trans "YOUR SECURITY MATTERS" %}</span>

@@ -18,3 +18,14 @@ class SomaliAuthenticationForm(AuthenticationForm):
         'invalid_login': 'Magaca isticmaalaha ama furaha sirta ah waa khalad.',
         'inactive': 'Akoonkan waa la joojiyay.',
     }
+
+
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(
+        label=_('Username'),
+        widget=forms.TextInput(attrs={
+            'placeholder': 'e.g. amina.yusuf',
+            'autocomplete': 'username',
+            'autofocus': True,
+        }),
+    )

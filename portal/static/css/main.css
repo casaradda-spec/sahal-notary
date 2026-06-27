@@ -590,6 +590,18 @@ table { width: 100%; border-collapse: collapse; }
 .stat-tint-purple { --stat-accent: var(--purple-600); --stat-icon-bg: var(--purple-50); --stat-icon-color: var(--purple-600); }
 .stat-tint-gold   { --stat-accent: var(--gold-500); --stat-icon-bg: var(--gold-50); --stat-icon-color: var(--gold-600); }
 
+/* ---- Reports page ---------------------------------------------------- */
+.growth-positive { color: #1f9d55; }
+.growth-negative { color: #dc4545; }
+.recent-activity-row-divided { border-bottom: 1px solid var(--border-subtle); }
+.recent-activity-row-alt {
+  background: rgba(244, 246, 250, 0.6);
+  margin: 0 -12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 8px;
+}
+
 /* ---- Empty states --------------------------------------------------- */
 .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
 .empty-state .icon { color: var(--border-strong); margin-bottom: 14px; }

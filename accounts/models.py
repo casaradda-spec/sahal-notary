@@ -15,5 +15,5 @@ class User(AbstractUser):
         return {
             self.Role.CLIENT: '/app/',
             self.Role.NOTARY: '/notary/',
-            self.Role.ADMIN: '/admin-panel/clients/',
+            self.Role.ADMIN: '/admin-panel/reports/',
         }[self.role]

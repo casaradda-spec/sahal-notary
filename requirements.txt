@@ -3,3 +3,4 @@ django-formtools==2.5.1
 xhtml2pdf==0.2.16
 qrcode==7.4.2
 Pillow==11.0.0
+python-dotenv==1.2.2
