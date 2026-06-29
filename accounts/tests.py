@@ -79,6 +79,40 @@ class PasswordChangeViewTests(TestCase):
         response = self.client.get(reverse('password_change'))
         self.assertEqual(response.status_code, 200)
 
+    def test_after_successful_change_other_pages_no_longer_redirect(self):
+        user = make_user('unpinned', AccountsUser.Role.NOTARY, must_change_password=True)
+        self.client.force_login(user)
+        self.client.post(
+            reverse('password_change'),
+            {'new_password1': 'BrandNewPass1', 'new_password2': 'BrandNewPass1'},
+        )
+        # /notary/templates/ doesn't touch request.user.notary_profile, unlike /notary/
+        response = self.client.get('/notary/templates/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_rejects_new_password_equal_to_temp_password(self):
+        user = make_user('rejecttemp', AccountsUser.Role.CLIENT, must_change_password=True)
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse('password_change'),
+            {'new_password1': '123', 'new_password2': '123'},
+        )
+        self.assertEqual(response.status_code, 200)  # re-renders the form with errors
+        user.refresh_from_db()
+        self.assertTrue(user.must_change_password)
+        self.assertTrue(user.check_password('123'))  # unchanged
+
+    def test_rejects_mismatched_passwords(self):
+        user = make_user('mismatched', AccountsUser.Role.CLIENT, must_change_password=True)
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse('password_change'),
+            {'new_password1': 'BrandNewPass1', 'new_password2': 'SomethingElse2'},
+        )
+        self.assertEqual(response.status_code, 200)
+        user.refresh_from_db()
+        self.assertTrue(user.must_change_password)
+
 
 class ForcePasswordChangeMiddlewareTests(TestCase):
     def test_pinned_to_password_change_page_until_changed(self):
@@ -87,10 +121,23 @@ class ForcePasswordChangeMiddlewareTests(TestCase):
         response = self.client.get('/notary/')
         self.assertRedirects(response, reverse('password_change'))
 
+    def test_redirected_regardless_of_which_page_is_visited(self):
+        user = make_user('pinnedeverywhere', AccountsUser.Role.NOTARY, must_change_password=True)
+        self.client.force_login(user)
+        for path in ('/', '/notary/templates/', '/notary/documents/'):
+            response = self.client.get(path)
+            self.assertRedirects(response, reverse('password_change'), msg_prefix=f'for {path}: ')
+
     def test_exempt_paths_not_redirected(self):
         user = make_user('exempt', AccountsUser.Role.NOTARY, must_change_password=True)
         self.client.force_login(user)
         response = self.client.get(reverse('password_change'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_without_flag_is_not_redirected(self):
+        user = make_user('notpinned', AccountsUser.Role.NOTARY, must_change_password=False)
+        self.client.force_login(user)
+        response = self.client.get('/notary/templates/')
         self.assertEqual(response.status_code, 200)
 
 

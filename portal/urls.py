@@ -39,6 +39,8 @@ urlpatterns = [
     path('admin-panel/notaries/<int:pk>/delete/', views_admin.notary_delete, name='admin_notary_delete'),
     path('admin-panel/reports/', views_admin.reports, name='admin_reports'),
 
+    path('admin-panel/users/<int:user_id>/reset-password/', views_admin.admin_reset_password, name='admin_reset_password'),
+
     path('verify/<uuid:qr_token>/', views_public.verify, name='verify'),
     path('verify/<uuid:qr_token>/qr.png', views_public.qr_image, name='qr_image'),
 ]

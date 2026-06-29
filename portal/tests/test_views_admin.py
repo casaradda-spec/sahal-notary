@@ -680,3 +680,102 @@ class NotaryDeleteTests(TestCase):
         self.client.force_login(profile.user)
         response = self.client.post(reverse('admin_notary_delete', args=[profile.pk]))
         self.assertEqual(response.status_code, 403)
+
+
+class AdminResetPasswordTests(TestCase):
+    def setUp(self):
+        self.admin = make_admin_user()
+        self.client.force_login(self.admin)
+
+    def test_resets_client_password_and_client_can_log_in(self):
+        profile = make_client_profile('resetclienttarget', password='OldPass123')
+        response = self.client.post(reverse('admin_reset_password', args=[profile.user.pk]))
+        self.assertRedirects(response, reverse('admin_clients'))
+
+        profile.user.refresh_from_db()
+        self.assertTrue(profile.user.check_password('123'))
+
+        self.client.logout()
+        login_ok = self.client.login(username='resetclienttarget', password='123')
+        self.assertTrue(login_ok)
+
+    def test_resets_password_sets_must_change_password_flag(self):
+        profile = make_client_profile('resetflagclient')  # factory sets must_change_password=False
+        self.assertFalse(profile.user.must_change_password)
+
+        self.client.post(reverse('admin_reset_password', args=[profile.user.pk]))
+
+        profile.user.refresh_from_db()
+        self.assertTrue(profile.user.must_change_password)
+
+    def test_resets_notary_password_and_redirects_to_notaries_list(self):
+        profile = make_notary_profile('resetnotarytarget')
+        profile.user.set_password('OldPass123')
+        profile.user.save(update_fields=['password'])
+
+        response = self.client.post(reverse('admin_reset_password', args=[profile.user.pk]))
+        self.assertRedirects(response, reverse('admin_notaries'))
+
+        profile.user.refresh_from_db()
+        self.assertTrue(profile.user.check_password('123'))
+
+    def test_success_message_shown(self):
+        profile = make_client_profile('resetmessageclient')
+        response = self.client.post(reverse('admin_reset_password', args=[profile.user.pk]), follow=True)
+        self.assertContains(response, 'Furaha cusub: 123')
+
+    def test_get_request_does_not_reset_password(self):
+        profile = make_client_profile('getnoresetclient', password='OldPass123')
+        self.client.get(reverse('admin_reset_password', args=[profile.user.pk]))
+        profile.user.refresh_from_db()
+        self.assertFalse(profile.user.check_password('123'))
+        self.assertTrue(profile.user.check_password('OldPass123'))
+
+    def test_admin_cannot_reset_own_password(self):
+        self.admin.set_password('AdminOriginal1')
+        self.admin.save(update_fields=['password'])
+        self.client.force_login(self.admin)  # refresh the session's auth hash after changing the password directly
+
+        response = self.client.post(reverse('admin_reset_password', args=[self.admin.pk]), follow=True)
+        self.assertContains(response, 'Lama beddeli karo')
+
+        self.admin.refresh_from_db()
+        self.assertTrue(self.admin.check_password('AdminOriginal1'))
+        self.assertFalse(self.admin.must_change_password)
+
+    def test_anonymous_redirected(self):
+        self.client.logout()
+        profile = make_client_profile('resetanonclient')
+        response = self.client.post(reverse('admin_reset_password', args=[profile.user.pk]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_client_role_forbidden(self):
+        actor = make_client_profile('resetforbiddenclientactor')
+        target = make_client_profile('resetforbiddenclienttarget')
+        self.client.force_login(actor.user)
+        response = self.client.post(reverse('admin_reset_password', args=[target.user.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_notary_role_forbidden(self):
+        actor = make_notary_profile('resetforbiddennotaryactor')
+        target = make_client_profile('resetforbiddennotarytarget')
+        self.client.force_login(actor.user)
+        response = self.client.post(reverse('admin_reset_password', args=[target.user.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_reset_button_appears_on_clients_list_for_admin(self):
+        profile = make_client_profile('resetlistclient')
+        response = self.client.get(reverse('admin_clients'))
+        self.assertContains(response, reverse('admin_reset_password', args=[profile.user.pk]))
+
+    def test_reset_button_hidden_from_notary_on_clients_list(self):
+        notary = make_notary_profile('resetlistnotaryviewer')
+        profile = make_client_profile('resethiddenclient')
+        self.client.force_login(notary.user)
+        response = self.client.get(reverse('admin_clients'))
+        self.assertNotContains(response, reverse('admin_reset_password', args=[profile.user.pk]))
+
+    def test_reset_button_appears_on_notaries_list(self):
+        profile = make_notary_profile('resetlistnotary')
+        response = self.client.get(reverse('admin_notaries'))
+        self.assertContains(response, reverse('admin_reset_password', args=[profile.user.pk]))

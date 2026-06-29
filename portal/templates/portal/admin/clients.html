@@ -101,6 +101,12 @@
           <div class="row-actions">
             <a href="{% url 'admin_client_edit' cl.pk %}" class="row-action-btn" title="{% trans 'Edit' %}" aria-label="{% trans 'Edit' %}">{% icon "pencil-square" size=16 %}</a>
             <a href="{% url 'admin_client_signature' cl.pk %}" class="row-action-btn" title="{% trans 'Signature' %}" aria-label="{% trans 'Signature' %}">{% icon "signature" size=16 %}</a>
+            {% if request.user.role == 'ADMIN' %}
+            <form method="post" action="{% url 'admin_reset_password' cl.user.pk %}" style="margin:0; display:inline;" onsubmit="return confirm('{% blocktrans with full_name=cl.user.get_full_name|escapejs %}Reset password for {{ full_name }} to 123?{% endblocktrans %}');">
+              {% csrf_token %}
+              <button type="submit" class="row-action-btn" title="{% trans 'Reset Password' %}" aria-label="{% trans 'Reset Password' %}">{% icon "arrow-path" size=16 %}</button>
+            </form>
+            {% endif %}
             <form method="post" action="{% url 'admin_client_delete' cl.pk %}" style="margin:0; display:inline;" onsubmit="return confirm('{% blocktrans with full_name=cl.user.get_full_name|escapejs %}Are you sure you want to delete {{ full_name }}?{% endblocktrans %}');">
               {% csrf_token %}
               <button type="submit" class="row-action-btn row-action-danger" title="{% trans 'Delete' %}" aria-label="{% trans 'Delete' %}">{% icon "trash" size=16 %}</button>

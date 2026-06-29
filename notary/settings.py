@@ -113,14 +113,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Password reset links (forgot-password flow) expire after this many seconds.
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # 24 hours
-
 
 # Email
 # https://docs.djangoproject.com/en/5.2/topics/email/
 # Falls back to printing emails to the console when no SMTP credentials are configured,
-# so the forgot-password flow works out of the box in development.
+# so the app works out of the box in development without real SMTP credentials.
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))

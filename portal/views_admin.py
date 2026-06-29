@@ -254,6 +254,26 @@ def notary_delete(request, pk):
     return redirect('admin_notaries')
 
 
+@role_required(AccountsUser.Role.ADMIN)
+def admin_reset_password(request, user_id):
+    target_user = get_object_or_404(User, pk=user_id)
+    redirect_to = 'admin_clients' if target_user.role == AccountsUser.Role.CLIENT else 'admin_notaries'
+
+    if request.method != 'POST':
+        return redirect(redirect_to)
+
+    full_name = target_user.get_full_name() or target_user.username
+    if target_user.pk == request.user.pk:
+        messages.error(request, 'Lama beddeli karo furahaaga sirta ah halkan — isticmaal "Beddel Furaha Sirta".')
+        return redirect(redirect_to)
+
+    target_user.set_password(TEMP_PASSWORD)
+    target_user.must_change_password = True
+    target_user.save(update_fields=['password', 'must_change_password'])
+    messages.success(request, f'Furaha sirta ah ee "{full_name}" waa la beddelay. Furaha cusub: {TEMP_PASSWORD}')
+    return redirect(redirect_to)
+
+
 def _next_month_start(d):
     return date(d.year + 1, 1, 1) if d.month == 12 else date(d.year, d.month + 1, 1)
 

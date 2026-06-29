@@ -83,6 +83,10 @@
       <span class="pill pill-completed"><span class="pill-dot"></span>{% trans "Active" %}</span>
       <div style="display:inline-flex; gap:6px;">
         <a href="{% url 'admin_notary_edit' nt.pk %}" class="btn btn-secondary btn-sm">{% icon "pencil-square" size=14 %}{% trans "Edit" %}</a>
+        <form method="post" action="{% url 'admin_reset_password' nt.user.pk %}" style="margin:0;" onsubmit="return confirm('{% blocktrans with full_name=nt.user.get_full_name|escapejs %}Reset password for {{ full_name }} to 123?{% endblocktrans %}');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-secondary btn-sm">{% icon "arrow-path" size=14 %}{% trans "Reset Password" %}</button>
+        </form>
         <form method="post" action="{% url 'admin_notary_delete' nt.pk %}" style="margin:0;" onsubmit="return confirm('{% blocktrans with full_name=nt.user.get_full_name|escapejs %}Are you sure you want to delete {{ full_name }}?{% endblocktrans %}');">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger btn-sm">{% icon "trash" size=14 %}{% trans "Delete" %}</button>
